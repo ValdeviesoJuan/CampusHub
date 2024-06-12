@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media (prefers-color-scheme: dark) {
+    body {
+      background-color: white;
+      color: black;
+    }}
+
+.shadow-right-custom-rotated {
+    box-shadow: 150px 0px 100px -50px rgba(0, 0, 0, 0.5);
+    }
+
+    .footer-fade {
+      position: absolute;
+      background: linear-gradient(to top, #1e293b, #1e293b 50%, hsla(0, 0%, 100%, 0) 50%);
+      
+  }
+
+  .about {
+    z-index: 9999;
+  }

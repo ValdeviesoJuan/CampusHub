@@ -1,0 +1,17 @@
+@keyframes bounce {
+  0% {
+      transform: scale(1); /* Start at normal size */
+    }
+    50% {
+      transform: scale(1.1); /* Scale up to 110% */
+    }
+    100% {
+      transform: scale(1); /* Back to normal size */
+    }
+}
+
+#logo:hover {
+  animation-name: bounce;
+  animation: bounce 3s infinite;
+}
+
