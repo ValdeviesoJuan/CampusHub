@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('subject_code');
             $table->string('title');
             $table->integer('credit_unit');
-            $table->foreignId('program_id')->constrained('programs')->onDelete('cascade')->nullable();
+            $table->foreignId('program_id')->constrained('programs')->onDelete('cascade');
+            $table->foreignID('year_level_id')->constrained('year_levels');
+            $table->foreignID('semester_id')->constrained();
             $table->timestamps();
         });
     }

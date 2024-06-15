@@ -14,11 +14,23 @@ class Subject extends Model
         'title',
         'credit_unit',
         'program_id',
+        'year_level_id',
+        'semester_id',
     ];
 
     public function program()
     {
         return $this->belongsTo(Program::class);
+    }
+
+    public function yearLevel()
+    {
+        return $this->belongsTo(YearLevel::class);
+    }
+
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class);
     }
 
     public function subjectsEnrolled()

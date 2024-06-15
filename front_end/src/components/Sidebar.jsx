@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faChartLine, faUser, faCalendar, faChartPie, faCog, faSignOutAlt, faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faChartLine, faUser, faCalendar, faChartPie, faCog, faSignOutAlt, faQuestionCircle, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from '../axios';
 import admin1 from "../assets/admin1.jpg";
@@ -37,6 +37,7 @@ const Sidebar = ({ onLogout }) => {
     const Menus = [
         { title: "Dashboard", icon: faChartLine, path: "/Dashboard" },
         { title: "Profile", icon: faUser, gap: true, path: "/Profile" },
+        { title: "Pseudo-Enrollment", icon: faUserPlus, path: "/pseudo-enrollment" },
         { title: "Schedule", icon: faCalendar, path: "/Schedule_admin" },
         { title: "Grades", icon: faChartPie, path: "/Grades_admin" },
         { title: "Settings", icon: faCog, gap: true, path: "/Settings" },

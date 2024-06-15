@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SubjectEnrolled;
+use App\Rules\Grade;
+use App\Rules\GradeRemarks;
+
 
 class SubjectEnrolledController extends Controller
 {
@@ -20,8 +23,8 @@ class SubjectEnrolledController extends Controller
             'subject_id' => 'required|exists:subjects,id',
             'instructor_id' => 'nullable|exists:instructors,id',
             'class_schedule' => 'nullable|string|max:255',
-            'midterm_grade' => 'nullable|numeric|min:0|max:100',
-            'final_grade' => 'nullable|numeric|min:0|max:100',
+            'midterm_grade' =>  ['nullable', new Grade],
+            'final_grade' =>  ['nullable', new Grade],
             'remarks' => 'nullable|string|max:255',
         ]);
 
@@ -44,8 +47,8 @@ class SubjectEnrolledController extends Controller
             'subject_id' => 'required|exists:subjects,id',
             'instructor_id' => 'nullable|exists:instructors,id',
             'class_schedule' => 'nullable|string|max:255',
-            'midterm_grade' => 'nullable|numeric|min:0|max:100',
-            'final_grade' => 'nullable|numeric|min:0|max:100',
+            'midterm_grade' => ['nullable', new Grade],
+            'final_grade' => ['nullable', new Grade],
             'remarks' => 'nullable|string|max:255',
         ]);
 

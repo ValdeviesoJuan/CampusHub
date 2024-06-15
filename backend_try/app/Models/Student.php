@@ -15,7 +15,7 @@ class Student extends Model
         'year_level_id',
         'semester_id',
         'section_id',
-        'school_year',
+        'school_year_id',
     ];
 
     public function user()

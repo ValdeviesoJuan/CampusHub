@@ -10,6 +10,7 @@ import Students from './components/Students';
 import Admin from './components/Admin';
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
+import EnrollmentForm from './components/Enrollment';
 import Grades_student from './components/Grades_student';
 import Schedule_student from './components/Schedule_student';
 import Grades_admin from './components/Grades_admin';
@@ -42,6 +43,7 @@ function App() {
               <Route exact path="/Profile" element={<Profile />} />
               <Route exact path="/Admin" element={<Admin />} />
               <Route exact path="/Students" element={<Students />} />
+              <Route exact path="/pseudo-enrollment" element={<EnrollmentForm />} />
               <Route exact path="/Grades_student" element={<Grades_student />} />
               <Route exact path="/Schedule_student" element={<Schedule_student />} />
               <Route exact path="/Grades_admin" element={<Grades_admin />} />
