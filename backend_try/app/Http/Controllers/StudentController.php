@@ -81,9 +81,13 @@ class StudentController extends Controller
     public function isEnrolled()
     {
         $user = auth()->user();
-        $isEnrolled = Student::where('user_id', $user->id)->exists();
+        $student = Student::where('user_id', $user->id)->first();
         
-        return response()->json(['isEnrolled' => $isEnrolled]);
+        if ($student) {
+            return response()->json(['isEnrolled' => true, 'studentId' => $student->id]);
+        } else {
+            return response()->json(['isEnrolled' => false, 'studentId' => null]);
+        }
     }
 
     public function show($id)

@@ -10,6 +10,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [studentId, setStudentId] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
@@ -18,6 +19,7 @@ export const AuthProvider = ({ children }) => {
 
   const handleLogin = () => {
     setIsAuthenticated(true);
+    setStudentId('123456');
   };
 
   const handleLogout = async () => {
@@ -31,7 +33,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, handleLogin, handleLogout }}>
+    <AuthContext.Provider value={{ isAuthenticated, studentId, handleLogin, handleLogout }}>
       {children}
     </AuthContext.Provider>
   );

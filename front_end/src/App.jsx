@@ -44,7 +44,7 @@ function App() {
               <Route exact path="/Admin" element={<Admin />} />
               <Route exact path="/Students" element={<Students />} />
               <Route exact path="/pseudo-enrollment" element={<EnrollmentForm />} />
-              <Route exact path="/Grades_student" element={<Grades_student />} />
+              <Route exact path="/Grades_student" element={<Grades_student/>} />
               <Route exact path="/Schedule_student" element={<Schedule_student />} />
               <Route exact path="/Grades_admin" element={<Grades_admin />} />
               <Route exact path="/Schedule_admin" element={<Schedule_admin />} />
