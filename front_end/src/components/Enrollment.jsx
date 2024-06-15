@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faPrint, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import axiosInstance from '../axios';
 
 const EnrollmentForm = () => {
@@ -11,6 +9,8 @@ const EnrollmentForm = () => {
   const [semesters, setSemesters] = useState([]);
   const [sections, setSections] = useState([]);
   const [schoolYears, setSchoolYears] = useState([]);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     program_id: '',
     year_level_id: '',
@@ -19,65 +19,75 @@ const EnrollmentForm = () => {
     school_year_id: ''
   });
 
-//   useEffect(() => {
-//     // Fetch programs, year levels, semesters, sections, and school years from the API
-//     const fetchData = async () => {
-//         try {
-//             const programsResponse = await axiosInstance.get('/api/programs');
-//             const yearLevelsResponse = await axiosInstance.get('/api/year_levels');
-//             const semestersResponse = await axiosInstance.get('/api/semesters');
-//             const sectionsResponse = await axiosInstance.get('/api/sections');
-//             const schoolYearsResponse = await axiosInstance.get('/api/school_years');
+  useEffect(() => {
+    // Fetch programs, year levels, semesters, sections, and school years from the API
+    const fetchData = async () => {
+        try {
+          const [programsResponse, yearLevelsResponse, semestersResponse, sectionsResponse, schoolYearsResponse, enrolledResponse] = await Promise.all([
+            axiosInstance.get('/api/programs'),
+            axiosInstance.get('/api/year_levels'),
+            axiosInstance.get('/api/semesters'),
+            axiosInstance.get('/api/sections'),
+            axiosInstance.get('/api/school_years'),
+            axiosInstance.get('/api/students/enrolled') // Endpoint to check if the user is already enrolled
+          ]);
 
-//             setPrograms(programsResponse.data);
-//             setYearLevels(yearLevelsResponse.data);
-//             setSemesters(semestersResponse.data);
-//             setSections(sectionsResponse.data);
-//             setSchoolYears(schoolYearsResponse.data);
+            setPrograms(programsResponse.data);
+            setYearLevels(yearLevelsResponse.data);
+            setSemesters(semestersResponse.data);
+            setSections(sectionsResponse.data);
+            setSchoolYears(schoolYearsResponse.data);
 
-//         } catch (error) {
-//             console.error('Error fetching data:', error);
-//         }
-//     };
+            setIsEnrolled(enrolledResponse.data.isEnrolled); //store result if user is or is not already enrolled
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            alert('Error fetching data. Please check console for details.');
+        }
+    };
 
-//     fetchData();
-//   }, []);
+    fetchData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
 
-    // try {
-    //     await axiosInstance.post('/api/students/enroll', formData);
-    //     alert('Enrollment completed successfully');
-    // } catch (error) {
-    //     console.error('Error enrolling student:', error);
-    //     alert('Error enrolling student. Please try again.');
-    // }
+    try {
+      await axiosInstance.post('/api/students/enroll', formData);
+      alert('Enrollment completed successfully');
+    } catch (error) {
+      console.error('Error enrolling student:', error);
+      alert('Error enrolling student. Please try again.');
+    }
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isEnrolled) {
+    return (
+        <div className="flex justify-center items-center h-screen">
+            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-md flex items-center" role="alert" style={{ maxWidth: '30rem' }}>
+                <FontAwesomeIcon icon={faExclamationCircle} className="h-6 w-6 text-yellow-500 mr-3" />
+                <div>
+                    <p className="font-bold">Enrollment Status</p>
+                    <p>You are already enrolled and cannot enroll again.</p>
+                </div>
+            </div>
+        </div>
+    );
+  }
 
   return (
     <div className='flex'>
       <div className='container mx-auto p-5 m-4'>
-
-        <div className='p-5 flex justify-between'>
-          <h1 className='-order-3 text-black'>Enrollment Form</h1>
-          <div className="flex items-center -order-2">
-            <button type="button" onClick={handlePrint} className="border-gray-900 bg-white text-gray-900 hover:text-gray-700 py-1 px-2 mr-2">
-              <FontAwesomeIcon icon={faPrint} className="mr-1" />
-              Print Form
-            </button>
-            <button type="button" className="border-gray-900 bg-white text-gray-900 hover:text-gray-700 py-1 px-2">
-              <FontAwesomeIcon icon={faBell} className="mr-1" />
-              Notifications
-            </button>
-          </div>
-        </div>
 
         <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 m-2 rounded-lg shadow-md flex items-center p-1 ml-2" role="alert" style={{ maxWidth: '100rem' }}>
           <div className="flex-shrink-0">
@@ -92,7 +102,7 @@ const EnrollmentForm = () => {
           <div className="lg:col-span-2 p-5">
             <div className="bg-white rounded-lg shadow-md p-3">
               <div className='p-5 flex justify-between'>
-                <h3 className='-order-3 text-black'>Hi "Student Name!!"</h3>
+                <h3 className='-order-3 text-black'>Hi "User 1234567!!"</h3>
               </div>
               <form onSubmit={handleSubmit} className="p-5">
               <div className="mb-4">
@@ -119,6 +129,7 @@ const EnrollmentForm = () => {
                     onChange={handleChange}
                     className="shadow appearance-none bg-white border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   >
+                    <option value="">Select Year Level</option>
                     {yearLevels.map(yearLevel => (
                         <option key={yearLevel.id} value={yearLevel.id}>{yearLevel.name}</option>
                     ))}
@@ -133,6 +144,7 @@ const EnrollmentForm = () => {
                     onChange={handleChange}
                     className="shadow appearance-none bg-white border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   >
+                    <option value="">Select Semester</option>
                     {semesters.map(semester => (
                         <option key={semester.id} value={semester.id}>{semester.name}</option>
                     ))}
@@ -148,6 +160,7 @@ const EnrollmentForm = () => {
                     onChange={handleChange}
                     className="shadow appearance-none bg-white border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   >
+                    <option value="">Select Section</option>
                     {sections.map(section => (
                         <option key={section.id} value={section.id}>{section.name}</option>
                     ))}
@@ -163,6 +176,7 @@ const EnrollmentForm = () => {
                     onChange={handleChange}
                     className="shadow appearance-none bg-white border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   >
+                    <option value="">Select School Year</option>
                     {schoolYears.map(schoolYear => (
                         <option key={schoolYear.id} value={schoolYear.id}>{schoolYear.name}</option>
                     ))}

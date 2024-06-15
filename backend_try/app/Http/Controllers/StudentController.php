@@ -69,13 +69,21 @@ class StudentController extends Controller
         }
     }
 
-    private function getSubjectsForEnrollment($programId, $yearLevelId, $semester)
+    private function getSubjectsForEnrollment($programId, $yearLevelId, $semesterId)
     {
         // Fetch subjects based on program, year level, and semester
         return Subject::where('program_id', $programId)
                       ->where('year_level_id', $yearLevelId)
-                      ->where('semester', $semester)
+                      ->where('semester_id', $semesterId)
                       ->get();
+    }
+
+    public function isEnrolled()
+    {
+        $user = auth()->user();
+        $isEnrolled = Student::where('user_id', $user->id)->exists();
+        
+        return response()->json(['isEnrolled' => $isEnrolled]);
     }
 
     public function show($id)
