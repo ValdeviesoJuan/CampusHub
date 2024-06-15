@@ -66,5 +66,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/students/{id}', [StudentController::class, 'destroy'])->name('students.destroy');
 
     Route::get('/students/{student_id}/subjects', [StudentSubjectController::class, 'getStudentSubjects'])->name('students.subjects');
+    Route::get('/students/{student_id}/subjects_enrolled', [StudentSubjectController::class, 'getStudentScheduleTeachers'])->name('students.subjects_enrolled');
 });
 

@@ -1,14 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faPrint, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import axiosInstance from '../axios';
 
 
 const Schedule = () => {
   const [date, setDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState("event1");
+  const [studentName, setStudentName] = useState("");
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [studentId, setStudentId] = useState(null);
+  const [enrolledSubjects, setEnrolledSubjects] = useState([]);
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    const checkEnrollment = async () => {
+      try {
+        const response = await axiosInstance.get('/api/students/enrolled');
+        const { isEnrolled, studentId } = response.data;
+        if (isEnrolled) {
+          setIsEnrolled(isEnrolled);
+          setStudentId(studentId);
+          fetchEnrolledSubjects(studentId);
+        } else {
+          alert('You are not enrolled as a student.');
+          // Handle redirect or display message for non-enrolled user
+        }
+      } catch (error) {
+        console.error('Error checking enrollment:', error);
+        alert('Error checking enrollment. Please check console for details.');
+      }
+    };
+
+    const fetchEnrolledSubjects = async (studentId) => {
+      try {
+        const response = await axiosInstance.get(`/api/students/${studentId}/subjects_enrolled`);
+        setEnrolledSubjects(response.data.enrolledSubjects);
+        setStudentName(response.data.studentName);
+      } catch (error) {
+        console.error('Error fetching enrolled subjects:', error);
+        alert('Error fetching enrolled subjects. Please check console for details.');
+      }
+    };
+
+    checkEnrollment();
+  }, []);
+
+    
   const onChange = (newDate) => {
     setDate(newDate);
   };
@@ -48,67 +89,36 @@ const Schedule = () => {
           <div className="lg:col-span-2 p-5 ">
             <div className="bg-white rounded-lg shadow-md p-3">
               <div className='p-5 flex justify-between'>
-                <h3 className='-order-3 text-black'>Hi "Student Name!!"</h3>
+                <h3 className='-order-3 text-black'>Hi {studentName}!!</h3>
               </div>
               <br />
               <div className="overflow-x-auto">
                 <table className="border-collapse border border-gray-300">
                   <thead>
                     <tr className="bg-[#9e9b9b]">
-                      <th className="border bg-gray-900 text-white px-2 py-1" width="20%">Time</th>
-                      <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Monday</th>
-                      <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Tuesday</th>
-                      <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Wednesday</th>
-                      <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Thursday</th>
-                      <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Friday</th>
-                      <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Saturday</th>
-                      <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Sunday</th>
+                      <th className="border bg-gray-900 text-white px-2 py-1" width="20%">ID</th>
+                      <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Subject Code</th>
+                      <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Description</th>
+                      <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Credit Unit</th>
+                      <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Section</th>
+                      <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Schedule</th>
+                      <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Teacher</th>
                     </tr>
                   </thead>
                   <tbody className="text-black">
-                    {/* Sample Rows */}
-                    <tr className="bg-white text-center">
-                      <td className="border border-gray px-2 py-1">8:00 - 9:00</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">Information Management(Lab)</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">Physics</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">English</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">Chemistry Lab</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">Life and works of Rizal</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">-</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">-</td>
-                    </tr>
-                    {/* Additional rows go here */}
-                    <tr className="bg-white text-center">
-                      <td className="border border-gray px-2 py-1">8:00 - 9:00</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">Information Management(Lab)</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">Physics</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">English</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">Chemistry Lab</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">Life and works of Rizal</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">-</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">-</td>
-                    </tr>
-                    <tr className="bg-white text-center">
-                      <td className="border border-gray px-2 py-1">8:00 - 9:00</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">Information Management(Lab)</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">Physics</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">English</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">Chemistry Lab</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">Life and works of Rizal</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">-</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">-</td>
-                    </tr>
-                    <tr className="bg-white text-center">
-                      <td className="border border-gray px-2 py-1">8:00 - 9:00</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">Information Management(Lab)</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">Physics</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">English</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">Chemistry Lab</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">Life and works of Rizal</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">-</td>
-                      <td className="border border-gray px-2 py-1" colSpan="2">-</td>
-                    </tr>
-
+                    {enrolledSubjects.map((subject, index) => (
+                      <tr className="bg-white text-center">
+                        <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">
+                          {index + 1}
+                        </th>
+                        <td className="border border-gray px-2 py-1" colSpan="2">{subject.subject.subject_code}</td>
+                        <td className="border border-gray px-2 py-1" colSpan="2">{subject.subject.title}</td>
+                        <td className="border border-gray px-2 py-1" colSpan="2">{subject.subject.credit_unit}</td>
+                        <td className="border border-gray px-2 py-1" colSpan="2">{subject.student.section.name}</td>
+                        <td className="border border-gray px-2 py-1" colSpan="2">{subject.class_schedule}</td>
+                        <td className="border border-gray px-2 py-1" colSpan="2">{subject.instructor_id}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

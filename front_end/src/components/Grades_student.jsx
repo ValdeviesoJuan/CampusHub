@@ -86,7 +86,7 @@ class Grades extends Component {
             </thead>
             <tbody>
               {enrolledSubjects.map((subject, index) => (
-                <tr className="border-b bg-white border-gray-900">
+                <tr className="border-b bg-white border-gray-900" key={index}>
                   <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">
                     {index + 1}
                   </th>
