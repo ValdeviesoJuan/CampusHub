@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import axiosInstance from '../axios';
 
 class Grades extends Component {
@@ -6,7 +6,7 @@ class Grades extends Component {
     super(props);
     this.state = {
       enrolledSubjects: [],
-      averageGrade: 'B+', // Example: Average grade state
+      averageGrade: 'B+',
       studentId: null,
       isEnrolled: false,
       studentName: '', 
@@ -102,7 +102,7 @@ class Grades extends Component {
             </tbody>
           </table>
         </div>
-        <br></br><br></br><br></br><br></br><br></br><br></br><br></br>
+        <br />
         <div className="mt-4 text-left w-full">
           <p className="text-black font-medium">Student Name: {studentName}</p>
         </div>

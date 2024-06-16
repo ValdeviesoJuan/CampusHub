@@ -23,6 +23,12 @@ class StudentController extends Controller
     {
         // Validate the form data
         $request->validate([
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'birthdate' => 'required|date',
+            'phone_number' => 'nullable|string|max:20',
+            'email' => 'required|email|max:255',
             'program_id' => 'required|exists:programs,id',
             'year_level_id' => 'required|exists:year_levels,id',
             'semester_id' => 'required|exists:semesters,id',
@@ -37,6 +43,12 @@ class StudentController extends Controller
         $student = Student::updateOrCreate(
             ['user_id' => $user->id],
             [
+                'first_name' => $request->first_name,
+                'middle_name' => $request->middle_name,
+                'last_name' => $request->last_name,
+                'birthdate' => $request->birthdate,
+                'phone_number' => $request->phone_number,
+                'email' => $request->email,
                 'program_id' => $request->program_id,
                 'year_level_id' => $request->year_level_id,
                 'semester_id' => $request->semester_id,
@@ -92,8 +104,35 @@ class StudentController extends Controller
 
     public function show($id)
     {
-        $student = Student::findOrFail($id);
-        return response()->json($student);
+        try {
+            // Fetch the student data including related models
+            $student = Student::with(['section', 'program'])
+                              ->findOrFail($id);
+
+            // Calculate age from birthdate
+            $birthdate = new \DateTime($student->birthdate);
+            $today = new \DateTime('today');
+            $age = $birthdate->diff($today)->y;
+
+            // Construct the data to return
+            $studentData = [
+                'student_id' => $student->id,
+                'full_name' => $student->first_name . ' ' . $student->middle_name . ' ' . $student->last_name,
+                'birthdate' => $student->birthdate,
+                'age' => $age,
+                'phone_number' => $student->phone_number,
+                'email' => $student->email,
+                'section_name' => $student->section->name,
+                'course' => $student->program->abbv,
+                'department' => $student->program->department->department_name,
+            ];
+
+            return response()->json(['studentInfo' => $studentData]);
+
+        } catch (\Exception $e) {
+            // Handle any errors like student not found
+            return response()->json(['error' => $e->getMessage()], 404);
+        }
     }
 
     public function update(Request $request, $id)
@@ -101,6 +140,12 @@ class StudentController extends Controller
         $student = Student::findOrFail($id);
 
         $validatedData = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'birthdate' => 'required|date',
+            'phone_number' => 'nullable|string|max:20',
+            'email' => 'required|email|max:255',
             'program_id' => 'required|exists:programs,id',
             'year_level_id' => 'required|exists:year_levels,id',
             'semester_id' => 'required|exists:semesters,id',

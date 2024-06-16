@@ -18,7 +18,7 @@ class StudentSubjectController extends Controller
                 }, 'student.section', 'student.user:id,name'])
                 ->get(['subject_id', 'student_id', 'midterm_grade', 'final_grade', 'remarks']);
 
-            $studentName = $student->user->name;
+            $studentName = $student->first_name;
             
             return response()->json([
                 'enrolledSubjects' => $subjects,
@@ -39,10 +39,10 @@ class StudentSubjectController extends Controller
             $subjects = $student->subjectsEnrolled()
                 ->with(['subject' => function ($query) {
                     $query->select('id', 'subject_code', 'title', 'credit_unit');
-                }, 'student.section', 'student.user:id,name'])
+                }, 'student.section'])
                 ->get(['subject_id', 'student_id', 'instructor_id', 'class_schedule', 'remarks']);
 
-            $studentName = $student->user->name;
+            $studentName = $student->first_name;
             
             return response()->json([
                 'enrolledSubjects' => $subjects,

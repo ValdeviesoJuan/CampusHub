@@ -15,7 +15,6 @@ const LoginForm = () => {
     const navigate = useNavigate();
     const { handleLogin } = useAuth();
     const location = useLocation();
-    
 
     useEffect(() => {
         async function fetchCsrfToken() {
@@ -26,6 +25,7 @@ const LoginForm = () => {
                 axiosInstance.defaults.headers['X-CSRF-TOKEN'] = data.csrf_token;
             } catch (error) {
                 console.error('Error fetching CSRF token:', error);
+                setError('Failed to fetch CSRF token.');
             }
         }
         fetchCsrfToken();
@@ -35,13 +35,17 @@ const LoginForm = () => {
         try {
           const token = await getCsrfToken();
           console.log(token);
+          return token;
         } catch (error) {
           console.error('Error fetching CSRF token:', error);
+          setError('Failed to fetch CSRF token.');
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+
         try {
           const token = getToken();
           console.log(token);
@@ -57,6 +61,11 @@ const LoginForm = () => {
 
         } catch (error) {
           console.error('Error logging in:', error);
+          if (error.response && error.response.status === 422) {
+            setError('Invalid email or password. Please try again.');
+          } else {
+            setError('An error occurred during login. Please try again.');
+          }
         }
     };
 

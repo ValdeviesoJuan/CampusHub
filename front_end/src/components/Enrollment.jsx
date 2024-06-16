@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import BlackLoadingSpinner from './BlackLoadingSpinner';
 import axiosInstance from '../axios';
 
 const EnrollmentForm = () => {
@@ -10,8 +11,15 @@ const EnrollmentForm = () => {
   const [sections, setSections] = useState([]);
   const [schoolYears, setSchoolYears] = useState([]);
   const [isEnrolled, setIsEnrolled] = useState(false);
+  const [enrollmentSuccess, setEnrollmentSuccess] = useState(false);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
+    first_name: '',
+    middle_name: '',
+    last_name: '',
+    birthdate: '',
+    phone_number: '',
+    email: '',
     program_id: '',
     year_level_id: '',
     semester_id: '',
@@ -61,6 +69,7 @@ const EnrollmentForm = () => {
     try {
       await axiosInstance.post('/api/students/enroll', formData);
       alert('Enrollment completed successfully');
+      setEnrollmentSuccess(true);
     } catch (error) {
       console.error('Error enrolling student:', error);
       alert('Error enrolling student. Please try again.');
@@ -68,7 +77,7 @@ const EnrollmentForm = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return  <div className='relative flex align-middle justify-center text-center mx-auto my-auto'> <BlackLoadingSpinner /> </div>
   }
 
   if (isEnrolled) {
@@ -85,15 +94,25 @@ const EnrollmentForm = () => {
     );
   }
 
+  if (enrollmentSuccess) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-md" role="alert">
+          <p>You've successfully enrolled, you can proceed to see your enrolled subjects.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className='flex'>
       <div className='container mx-auto p-5 m-4'>
 
-        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 m-2 rounded-lg shadow-md flex items-center p-1 ml-2" role="alert" style={{ maxWidth: '100rem' }}>
+        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 m-2 rounded-lg shadow-md flex items-center p-1 ml-[30px]" role="alert" style={{ maxWidth: '100rem' }}>
           <div className="flex-shrink-0">
             <FontAwesomeIcon icon={faExclamationCircle} className="h-4 w-4 p-1 text-yellow-500" />
           </div>
-          <div className="ml-3 text-xs font-small">
+          <div className="ml-3 text-s font-small">
             Please fill out the form carefully and double-check your information before submitting.
           </div>
         </div>
@@ -102,10 +121,87 @@ const EnrollmentForm = () => {
           <div className="lg:col-span-2 p-5">
             <div className="bg-white rounded-lg shadow-md p-3">
               <div className='p-5 flex justify-between'>
-                <h3 className='-order-3 text-black'>Hi "User 1234567!!"</h3>
+                <h3 className='-order-3 text-black'>Enrollment Form</h3>
               </div>
               <form onSubmit={handleSubmit} className="p-5">
-              <div className="mb-4">
+
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="first_name">First Name</label>
+                  <input
+                    type="text"
+                    id="first_name"
+                    name="first_name"
+                    value={formData.first_name}
+                    onChange={handleChange}
+                    className="shadow appearance-none border bg-white rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    required
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="middle_name">Middle Name</label>
+                  <input
+                    type="text"
+                    id="middle_name"
+                    name="middle_name"
+                    value={formData.middle_name}
+                    onChange={handleChange}
+                    className="shadow appearance-none border bg-white rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="last_name">Last Name</label>
+                  <input
+                    type="text"
+                    id="last_name"
+                    name="last_name"
+                    value={formData.last_name}
+                    onChange={handleChange}
+                    className="shadow appearance-none border bg-white rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    required
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="birthdate">Birthdate</label>
+                  <input
+                    type="date"
+                    id="birthdate"
+                    name="birthdate"
+                    value={formData.birthdate}
+                    onChange={handleChange}
+                    className="shadow appearance-none border bg-white rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    required
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="phone_number">Phone Number</label>
+                  <input
+                    type="text"
+                    id="phone_number"
+                    name="phone_number"
+                    value={formData.phone_number}
+                    onChange={handleChange}
+                    className="shadow appearance-none border bg-white rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">Email</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="shadow appearance-none border bg-white rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    required
+                  />
+                </div>
+                
+                <div className="mb-4">
                   <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="program_id">Program</label>
                   <select
                     id="program_id"
@@ -120,6 +216,7 @@ const EnrollmentForm = () => {
                     ))}
                   </select>
                 </div>
+
                 <div className="mb-4">
                   <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="year_level_id">Year level</label>
                   <select
@@ -135,6 +232,7 @@ const EnrollmentForm = () => {
                     ))}
                   </select>
                 </div>
+
                 <div className="mb-4">
                   <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="semester_id">Semester</label>
                   <select
@@ -150,7 +248,7 @@ const EnrollmentForm = () => {
                     ))}
                   </select>
                 </div>
-                
+
                 <div className="mb-4">
                   <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="section_id">Section</label>
                   <select
@@ -182,12 +280,14 @@ const EnrollmentForm = () => {
                     ))}
                   </select>
                 </div>
+
                 <button
                   type="submit"
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 >
                   Submit
                 </button>
+
               </form>
             </div>
           </div>
