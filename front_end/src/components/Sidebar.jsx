@@ -4,6 +4,7 @@ import { faBars, faChartLine, faUser, faCalendar, faChartPie, faCog, faSignOutAl
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import axiosInstance from '../axios';
 import admin1 from "../assets/admin1.jpg";
+import { useAuth } from '../context/AuthContext';
 
 const Sidebar = ({ onLogout }) => {
     const location = useLocation();
@@ -11,8 +12,23 @@ const Sidebar = ({ onLogout }) => {
     const [open, setOpen] = useState(true); // State to manage sidebar open/close
     const [barsRotated, setBarsRotated] = useState(false); // State to manage bars icon rotation
     const [isDropdownVisible, setDropdownVisible] = useState(false); // State to manage dropdown visibility
+    const [studentName, setStudentName] = useState('');
+    const [userRole, setUserRole] = useState('');
+    const {isAuthenticated} = useAuth();
+    console.log(isAuthenticated);
 
     useEffect(() => {
+        const storedStudentName = localStorage.getItem('studentName');
+        console.log(storedStudentName);
+        const storedUserRole = localStorage.getItem('userRole');
+        console.log(storedUserRole);
+        if (storedStudentName) {
+            setStudentName(storedStudentName);
+        }
+        if (storedUserRole) {
+            setUserRole(storedUserRole);
+        }
+
         async function fetchCsrfToken() {
             try {
                 const { data } = await axiosInstance.get('/csrf-token');
@@ -34,33 +50,34 @@ const Sidebar = ({ onLogout }) => {
         setDropdownVisible(!isDropdownVisible);
     };
 
-    const Menus = [
-        { title: "Dashboard", icon: faChartLine, path: "/Dashboard" },
-        { title: "Profile", icon: faUser, gap: true, path: "/Profile" },
-        { title: "Pseudo-Enrollment", icon: faUserPlus, path: "/pseudo-enrollment" },
-        { title: "Schedule", icon: faCalendar, path: "/Schedule_student" },
-        { title: "Grades", icon: faChartPie, path: "/Grades_student" },
-        { title: "Settings", icon: faCog, gap: true, path: "/Settings" },
+    const adminMenus = [
+        { title: "Dashboard", icon: faChartLine, path: "/admin/dashboard" },
+        { title: "Profile", icon: faUser, gap: true, path: "/admin/profile" },
+        { title: "Schedule", icon: faCalendar, path: "/admin/schedules" },
+        { title: "Grades", icon: faChartPie, path: "/admin/grades" },
+        { title: "Settings", icon: faCog, gap: true, path: "/settings" },
         { title: "", gap: true, path: "/" },
         { title: "", gap: true, path: "/" },
         {
             title: (
-                <li className="relative" onClick={toggleDropdown}>
-                    <img src={admin1} className="w-12 h-12 rounded-full mb-2" alt="Kent" />
-                    <a href="#" className="text-white hover:text-gray-400">Kent Vicente</a>
+                <li className="relative flex items-center" onClick={toggleDropdown}>
+                    <div className='flex items-center'>
+                        <img src={admin1} className="w-9 h-9 rounded-full mb-2 mr-2" alt="StudentPic" />
+                        <a href="#" className="text-white hover:text-gray-400 flex relative">{studentName}</a>
+                    </div>
                     {isDropdownVisible && (
                         <ul className="absolute bottom-0 left-0 mb-16 bg-white border border-gray-200 rounded-md shadow-lg z-10">
                             <li className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100">
                                 <FontAwesomeIcon icon={faUser} className="mr-2 text-lg" />
-                                <span className="text-lg">Profile</span>
+                                <span className="text-l font-bold">Profile</span>
                             </li>
                             <li className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100">
                                 <FontAwesomeIcon icon={faQuestionCircle} className="mr-2 text-lg" />
-                                <span className="text-lg">Help</span>
+                                <span className="text-l font-bold">Help</span>
                             </li>
                             <li onClick={onLogout} className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100">
                                 <FontAwesomeIcon icon={faSignOutAlt} className="mr-2 text-lg" />
-                                <span className="text-lg">Logout</span>
+                                <span className="text-l font-bold">Logout</span>
                             </li>
                         </ul>
                     )}
@@ -68,6 +85,45 @@ const Sidebar = ({ onLogout }) => {
             )
         }
     ];
+
+    const studentMenus = [
+        { title: "Dashboard", icon: faChartLine, path: "/student/dashboard" },
+        { title: "Profile", icon: faUser, gap: true, path: "/student/profile" },
+        { title: "Pseudo-Enrollment", icon: faUserPlus, path: "/student/pseudo-enrollment" },
+        { title: "Schedule", icon: faCalendar, path: "/student/schedules" },
+        { title: "Grades", icon: faChartPie, path: "/student/grades" },
+        { title: "Settings", icon: faCog, gap: true, path: "/settings" },
+        { title: "", gap: true, path: "/" },
+        { title: "", gap: true, path: "/" },
+        {
+            title: (
+                <li className="relative flex items-center" onClick={toggleDropdown}>
+                    <div className='flex items-center'>
+                        <img src={admin1} className="w-9 h-9 rounded-full mb-2 mr-2" alt="StudentPic" />
+                        <a href="#" className="text-white hover:text-gray-400 flex relative">{studentName}</a>
+                    </div>
+                    {isDropdownVisible && (
+                        <ul className="absolute bottom-0 left-0 mb-16 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                            <li className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                <FontAwesomeIcon icon={faUser} className="mr-2 text-lg" />
+                                <span className="text-l font-bold">Profile</span>
+                            </li>
+                            <li className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                <FontAwesomeIcon icon={faQuestionCircle} className="mr-2 text-lg" />
+                                <span className="text-l font-bold">Help</span>
+                            </li>
+                            <li onClick={onLogout} className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                <FontAwesomeIcon icon={faSignOutAlt} className="mr-2 text-lg" />
+                                <span className="text-l font-bold">Logout</span>
+                            </li>
+                        </ul>
+                    )}
+                </li>
+            )
+        }
+    ];
+
+    const Menus = userRole === 'admin' ? adminMenus : studentMenus;
 
     return (
         <div className="flex">

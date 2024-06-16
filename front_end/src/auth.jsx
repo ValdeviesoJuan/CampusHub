@@ -48,7 +48,6 @@ export const logout = async () => {
   try {
     await getCsrfToken();
     await axiosInstance.post('/logout');
-    localStorage.removeItem('authToken');
   } catch (error) {
     throw error;
   }

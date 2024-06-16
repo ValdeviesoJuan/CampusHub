@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axiosInstance from '../axios';
+import BlackLoadingSpinner from './BlackLoadingSpinner';
 
 class Grades extends Component {
   constructor(props) {
@@ -10,6 +11,7 @@ class Grades extends Component {
       studentId: null,
       isEnrolled: false,
       studentName: '', 
+      loading: true,
     };
   }
 
@@ -27,6 +29,7 @@ class Grades extends Component {
         this.fetchEnrolledSubjects(studentId);
       } else {
         alert('You are not enrolled as a student.');
+        this.setState({ loading: false });
         // Handle redirect or display message for non-enrolled user
       }
     } catch (error) {
@@ -38,10 +41,15 @@ class Grades extends Component {
   fetchEnrolledSubjects = async (studentId) => {
     try {
       const response = await axiosInstance.get(`/api/students/${studentId}/subjects`);
-      this.setState({ enrolledSubjects: response.data.enrolledSubjects, studentName: response.data.studentName });
+      this.setState({ 
+        enrolledSubjects: response.data.enrolledSubjects,
+        studentName: response.data.studentName,
+        loading: false,  
+      });
     } catch (error) {
       console.error('Error fetching enrolled subjects:', error);
       alert('Error fetching enrolled subjects. Please check console for details.');
+      this.setState({ loading: false });
     }
   };
 
@@ -50,7 +58,7 @@ class Grades extends Component {
   }
 
   render() {
-    const { enrolledSubjects, averageGrade, studentName } = this.state;
+    const { enrolledSubjects, averageGrade, studentName, loading } = this.state;
 
     return (
       <main className="relative flex flex-col items-center p-8">
@@ -85,20 +93,28 @@ class Grades extends Component {
               </tr>
             </thead>
             <tbody>
-              {enrolledSubjects.map((subject, index) => (
-                <tr className="border-b bg-white border-gray-900" key={index}>
-                  <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">
-                    {index + 1}
-                  </th>
-                  <td className="px-6 py-4">{subject.subject.subject_code}</td>
-                  <td className="px-6 py-4">{subject.subject.title}</td>
-                  <td className="px-6 py-4">{subject.subject.credit_unit}</td>
-                  <td className="px-6 py-4">{subject.student.section.name}</td>
-                  <td className="px-6 py-4">{subject.midterm_grade}</td>
-                  <td className="px-6 py-4">{subject.final_grade}</td>
-                  <td className="px-6 py-4">{subject.remarks}</td>
-                </tr>
-              ))}
+              {loading ? (
+                        <tr>
+                          <td colSpan="12" className="text-center">
+                            <BlackLoadingSpinner />
+                          </td>
+                        </tr>
+                      ) : (
+                enrolledSubjects.map((subject, index) => (
+                  <tr className="border-b bg-white border-gray-900" key={index}>
+                    <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">
+                      {index + 1}
+                    </th>
+                    <td className="px-6 py-4">{subject.subject.subject_code}</td>
+                    <td className="px-6 py-4">{subject.subject.title}</td>
+                    <td className="px-6 py-4">{subject.subject.credit_unit}</td>
+                    <td className="px-6 py-4">{subject.student.section.name}</td>
+                    <td className="px-6 py-4">{subject.midterm_grade}</td>
+                    <td className="px-6 py-4">{subject.final_grade}</td>
+                    <td className="px-6 py-4">{subject.remarks}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

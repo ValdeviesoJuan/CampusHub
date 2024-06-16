@@ -40,6 +40,7 @@ class Profile extends Component {
         this.fetchStudentInformation(studentId);
       } else {
         alert('You are not enrolled as a student.');
+        this.setState({ loading: false });
         // Handle redirect or display message for non-enrolled user
       }
     } catch (error) {
@@ -72,16 +73,16 @@ class Profile extends Component {
     return (
       <div className="flex flex-col bg-white bg-custom-image bg-cover bg-center h-full max-h-screen relative overflow-hidden">
         <div class='profile' className='bg-slate-800 h-[200px] w-[295px] rounded-md relative top-[10%] left-[5%] shadow-2xl'>
-          <img src="shoyo.jpg" alt="Student" className="absolute top-[-25%] left-[3%] border-4 border-slate-800 rounded-full h-[140px]"></img>
+          <img src="../shoyo.jpg" alt="Student" className="absolute top-[-25%] left-[3%] border-4 border-slate-800 rounded-full h-[140px]"></img>
           <button className="absolute left-[39%] top-[30%] bg-transparent border-none outline-none p-0 m-0">
             <FontAwesomeIcon icon={faSquarePen} className="text-white text-[28px]" style={{ width: '25px', height: '25px' }} />
           </button>
           <p className='text-white text-xl absolute left-[5%] top-[50%] '>Student Name: {studentData.full_name}</p>
-          <p className='text-white text-lg absolute  left-[5%] top-[80%]'> Student ID: {studentData.student_id}</p>
+          <p className='text-white text-lg absolute left-[5%] top-[80%]'> Student ID: {studentData.student_id}</p>
         </div>
 
         <div className='bg-slate-800 h-[280px] w-[300px] rounded-md relative top-[15%] left-[5%] shadow-2xl'>
-          <p className='text-white text-lg absolute left-[4%] top-[5%] text-[20px]'>CURRENTLY ENROLLED IN </p>
+          <p className='text-white text-lg absolute left-[4%] top-[5%] text-[20px]'>Currently Enrolled In</p>
           <p className='bg-slate-100 pt-2 pl-2 pb-8 w-[300px] text-slate-900 text-xl absolute top-[20%]'>Section: {studentData.section_name}</p>
           <br />
           <p className='bg-slate-100 pb-8 pl-2 w-[300px] text-slate-900 text-xl absolute top-[40%]'>Course: {studentData.course}</p>
@@ -91,14 +92,14 @@ class Profile extends Component {
         </div>
 
 
-        <div class='profile' className='rounded-md w-[50%] h-[20%] relative top-[-27.5%] left-[30%] justify-center'>
-        <table class="table-fixed border-collapse border-spacing-0 shadow-2xl rounded-lg">
-        <caption class="caption-top bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 mb-5 w-full rounded-lg shadow-md">
+        <div class='profile' className='rounded-md w-[50%] h-[20%] relative top-[-25%] left-[30%] justify-center'>
+        <table className="table-fixed border-collapse border-spacing-0 shadow-2xl rounded-lg">
+        <caption className="caption-top bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 mb-5 w-full rounded-lg shadow-md">
         The information of students is strictly confidential and will not be disclosed outside the school.
         </caption>
             <thead>
               <tr>
-                <th className='bg-slate-800 rounded-tl-lg text-white'>General Info</th>
+                <th className='bg-slate-800 rounded-tl-lg text-white text-lg font'>Student Information</th>
                 <th className='bg-slate-800 rounded-tr-lg'></th>
               </tr>
             </thead>

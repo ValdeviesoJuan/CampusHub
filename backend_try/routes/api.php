@@ -49,7 +49,6 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->middleware('auth')
                 ->name('logout');
 
-
 // Student routes
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/programs', [ProgramController::class, 'index']);

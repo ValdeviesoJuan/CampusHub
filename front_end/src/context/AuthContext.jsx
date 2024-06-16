@@ -11,21 +11,30 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [studentId, setStudentId] = useState(null);
+  const [userRole, setUserRole] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     setIsAuthenticated(!!token);
+    const role = localStorage.getItem('userRole');
+    setUserRole(role);
   }, []);
 
-  const handleLogin = () => {
+  const handleLogin = (userData) => {
+    const { token, role } = userData;
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('userRole', role);
     setIsAuthenticated(true);
-    setStudentId('123456');
+    setUserRole(role);
   };
 
   const handleLogout = async () => {
     try {
       await logout();
       setIsAuthenticated(false);
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('studentName');
+      localStorage.removeItem('userRole');
       
     } catch (error) {
       console.error('Error logging out:', error);
@@ -33,7 +42,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, studentId, handleLogin, handleLogout }}>
+    <AuthContext.Provider value={{ isAuthenticated, studentId, handleLogin, handleLogout, userRole }}>
       {children}
     </AuthContext.Provider>
   );

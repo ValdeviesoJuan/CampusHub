@@ -4,6 +4,7 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faPrint, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import BlackLoadingSpinner from './BlackLoadingSpinner';
 import axiosInstance from '../axios';
 
 
@@ -14,6 +15,7 @@ const Schedule = () => {
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [studentId, setStudentId] = useState(null);
   const [enrolledSubjects, setEnrolledSubjects] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,6 +42,7 @@ const Schedule = () => {
         const response = await axiosInstance.get(`/api/students/${studentId}/subjects_enrolled`);
         setEnrolledSubjects(response.data.enrolledSubjects);
         setStudentName(response.data.studentName);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching enrolled subjects:', error);
         alert('Error fetching enrolled subjects. Please check console for details.');
@@ -94,6 +97,7 @@ const Schedule = () => {
               <br />
               <div className="overflow-x-auto">
                 <table className="border-collapse border border-gray-300">
+
                   <thead>
                     <tr className="bg-[#9e9b9b]">
                       <th className="border bg-gray-900 text-white px-2 py-1" width="20%">ID</th>
@@ -104,22 +108,32 @@ const Schedule = () => {
                       <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Schedule</th>
                       <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Teacher</th>
                     </tr>
-                  </thead>
+                  </thead>  
+
                   <tbody className="text-black">
-                    {enrolledSubjects.map((subject, index) => (
-                      <tr className="bg-white text-center">
-                        <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">
-                          {index + 1}
-                        </th>
-                        <td className="border border-gray px-2 py-1" colSpan="2">{subject.subject.subject_code}</td>
-                        <td className="border border-gray px-2 py-1" colSpan="2">{subject.subject.title}</td>
-                        <td className="border border-gray px-2 py-1" colSpan="2">{subject.subject.credit_unit}</td>
-                        <td className="border border-gray px-2 py-1" colSpan="2">{subject.student.section.name}</td>
-                        <td className="border border-gray px-2 py-1" colSpan="2">{subject.class_schedule}</td>
-                        <td className="border border-gray px-2 py-1" colSpan="2">{subject.instructor_id}</td>
+                    {loading ? (
+                      <tr>
+                        <td colSpan="12" className="text-center">
+                          <BlackLoadingSpinner />
+                        </td>
                       </tr>
-                    ))}
+                    ) : (
+                      enrolledSubjects.map((subject, index) => (
+                        <tr className="bg-white text-center" key={index}>
+                          <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">
+                            {index + 1}
+                          </th>
+                          <td className="border border-gray px-2 py-1" colSpan="2">{subject.subject.subject_code}</td>
+                          <td className="border border-gray px-2 py-1" colSpan="2">{subject.subject.title}</td>
+                          <td className="border border-gray px-2 py-1" colSpan="2">{subject.subject.credit_unit}</td>
+                          <td className="border border-gray px-2 py-1" colSpan="2">{subject.student.section.name}</td>
+                          <td className="border border-gray px-2 py-1" colSpan="2">{subject.class_schedule}</td>
+                          <td className="border border-gray px-2 py-1" colSpan="2">{subject.instructor_id}</td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
+
                 </table>
               </div>
             </div>

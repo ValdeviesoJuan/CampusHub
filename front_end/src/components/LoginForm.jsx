@@ -50,14 +50,19 @@ const LoginForm = () => {
           const token = getToken();
           console.log(token);
           await login(email, password);
-
           localStorage.setItem('authToken', token);
 
           const userData = await getUser(); 
           console.log(userData);
 
-          handleLogin();
-          navigate('/dashboard');
+          handleLogin(userData);
+          if (userData.role === 'admin') {
+            navigate('/admin/dashboard');
+          } else if (userData.role === 'student') {
+            navigate('/student/dashboard');
+          } else {
+            navigate('/login');
+          }
 
         } catch (error) {
           console.error('Error logging in:', error);
