@@ -9,7 +9,7 @@ use App\Models\Subject;
 use App\Models\Instructor;
 use App\Models\Section;
 use App\Models\YearLevel;
-use App\Models\SchoolYear;
+use App\Models\SubjectEnrolled;
 
 class StudentController extends Controller
 {
@@ -69,11 +69,20 @@ class StudentController extends Controller
         $subjects = $this->getSubjectsForEnrollment($student->program_id, $student->year_level_id, $student->semester_id);
 
         foreach ($subjects as $subject) {
+            $existingEnrollment = SubjectEnrolled::where('subject_id', $subject->id)
+                ->whereHas('student', function ($query) use ($student) {
+                    $query->where('section_id', $student->section_id)
+                        ->where('school_year_id', $student->school_year_id);
+                })
+                ->first();
+
+            $instructorId = $existingEnrollment ? $existingEnrollment->instructor_id : null;
+            $classSchedule = $existingEnrollment ? $existingEnrollment->class_schedule : '';
 
             $student->subjectsEnrolled()->create([
                 'subject_id' => $subject->id,
-                'instructor_id' => null,
-                'class_schedule' => '',
+                'instructor_id' => $instructorId,
+                'class_schedule' => $classSchedule,
                 'midterm_grade' => null,
                 'final_grade' => null,
                 'remarks' => '',

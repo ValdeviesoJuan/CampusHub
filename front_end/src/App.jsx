@@ -34,6 +34,19 @@ function App() {
     navigate('/login');
   };
 
+  const getDashboardRoute = (role) => {
+    switch (role) {
+      case 'admin':
+        return "/admin/dashboard";
+      case 'student':
+        return "/student/dashboard";
+      case 'instructor':
+        return "/instructor/dashboard";
+      default:
+        return "/login";
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen w-screen bg-slate-100">
       {isAuthenticated && <Header />}
@@ -41,7 +54,8 @@ function App() {
         {isAuthenticated && <Sidebar onLogout={handleLogoutAndNavigate} />}
         <div className="flex flex-col flex-1 bg-slate-100">
           <Routes>
-            <Route path="/" element={<Navigate to={isAuthenticated ? (userRole === 'admin' ? "/admin/dashboard" : "/student/dashboard") : "/login"} />} />
+            <Route path="/" element={<Navigate to={isAuthenticated ? getDashboardRoute(userRole) : "/login"} />} />
+            <Route path="/login" element={<LoginForm />} />
             <Route path="/login" element={<LoginForm />} />
             <Route path="/register" element={<RegisterForm />} />
             <Route path="/admin/dashboard" element={isAuthenticated && userRole === 'admin' ? <Dashboard_admin /> : <Navigate to="/login" />} />
@@ -52,7 +66,7 @@ function App() {
             <Route path="/student/pseudo-enrollment" element={isAuthenticated && userRole === 'student' ? <EnrollmentForm /> : <Navigate to="/login" />} />
             <Route path="/student/grades" element={isAuthenticated && userRole === 'student' ? <Grades_student /> : <Navigate to="/login" />} />
             <Route path="/student/schedules" element={isAuthenticated && userRole === 'student' ? <Schedule_student /> : <Navigate to="/login" />} />
-            <Route path="/instructor/dashboard" element={isAuthenticated && userRole === 'instructor' ? <Dashboard_instructor/> : <Navigate to="/login" />} />
+            <Route path="/instructor/dashboard" element={isAuthenticated && userRole === 'instructor' ? <Dashboard_instructor /> : <Navigate to="/login" />} />
             <Route path="/instructor/profile" element={isAuthenticated && userRole === 'instructor' ? <Profile_instructor/> : <Navigate to="/login" />} />
             <Route path="/instructor/pseudo-enrollment" element={isAuthenticated && userRole === 'instructor' ? <EnrollmentInstructor /> : <Navigate to="/login" />} />
             <Route path="/instructor/grades" element={isAuthenticated && userRole === 'instructor' ? <Grades_admin /> :  <Navigate to="/login" />} />

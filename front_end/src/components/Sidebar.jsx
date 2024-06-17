@@ -27,6 +27,7 @@ const Sidebar = ({ onLogout }) => {
         }
         if (storedUserRole) {
             setUserRole(storedUserRole);
+            console.log(userRole);
         }
 
         async function fetchCsrfToken() {
@@ -168,7 +169,6 @@ const Sidebar = ({ onLogout }) => {
         Menus = studentMenus;
     } else {
         console.log('Error, You have no Role in Life');
-        navigate('/login');
     }
 
     return (

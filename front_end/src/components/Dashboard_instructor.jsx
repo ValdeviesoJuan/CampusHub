@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAddressCard, faCalendarDays, faChartColumn } from '@fortawesome/free-solid-svg-icons';
 import axiosInstance from '../axios';

@@ -86,7 +86,7 @@ const EnrollmentForm = () => {
             <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-md flex items-center" role="alert" style={{ maxWidth: '30rem' }}>
                 <FontAwesomeIcon icon={faExclamationCircle} className="h-6 w-6 text-yellow-500 mr-3" />
                 <div>
-                    <p className="font-bold">Enrollment Status</p>
+                    <p className="font-bold">Student Enrollment Status</p>
                     <p>You are already enrolled and cannot enroll again.</p>
                 </div>
             </div>

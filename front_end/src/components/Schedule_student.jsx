@@ -61,6 +61,8 @@ const Schedule = () => {
     window.print();
   };
 
+  console.log(enrolledSubjects);
+
   return (
     <div className='flex'>
      
@@ -100,7 +102,7 @@ const Schedule = () => {
 
                   <thead>
                     <tr className="bg-[#9e9b9b]">
-                      <th className="border bg-gray-900 text-white px-2 py-1" width="20%">ID</th>
+                      <th className="border bg-gray-900 text-white px-2 py-1 w-[5px] text-center">ID</th>
                       <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Subject Code</th>
                       <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Description</th>
                       <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Credit Unit</th>
@@ -127,8 +129,8 @@ const Schedule = () => {
                           <td className="border border-gray px-2 py-1" colSpan="2">{subject.subject.title}</td>
                           <td className="border border-gray px-2 py-1" colSpan="2">{subject.subject.credit_unit}</td>
                           <td className="border border-gray px-2 py-1" colSpan="2">{subject.student.section.name}</td>
-                          <td className="border border-gray px-2 py-1" colSpan="2">{subject.class_schedule}</td>
-                          <td className="border border-gray px-2 py-1" colSpan="2">{subject.instructor_id}</td>
+                          <td className="border border-gray px-2 py-1" colSpan="2">{subject.class_schedule ? subject.class_schedule : 'Not Yet Assigned'}</td>
+                          <td className="border border-gray px-2 py-1" colSpan="2">{subject.instructor_id ? subject.instructor.name : 'Not Yet Assigned'}</td>
                         </tr>
                       ))
                     )}

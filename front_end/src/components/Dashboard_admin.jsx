@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAddressCard, faCalendarDays, faChartColumn } from '@fortawesome/free-solid-svg-icons';
 import axiosInstance from '../axios';
@@ -24,7 +24,7 @@ class Dashboard_admin extends Component {
           <p className="text-white text-xl absolute top-[79%] left-[4%] text-[27px]">Welcome,</p>
         </div>
 
-        <div className="boxes flex space-x-24 relative -top-[1%] -left-[10%] mx-auto">
+        <div className="boxes flex space-x-24 relative -top-[1%] left-[-21.6%] mx-auto">
           <Link to="/admin/instructor-assign" className="bg-custom-image2 box flex items-center justify-center shadow-md w-[280px] h-[180px] bg-slate-800 bg-no-repeat cursor-pointer rounded-[15px] transition ease duration-300 hover:bg-[rgb(51,65,85)]">
             <FontAwesomeIcon icon={faAddressCard} className="text-white text-[100px]" />
           </Link>

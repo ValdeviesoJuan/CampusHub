@@ -20,13 +20,15 @@ const EnrollmentInstructor = () => {
     const fetchData = async () => {
         try {
             const enrolledResponse = await axiosInstance.get('/api/instructors/enrolled');
-
             setIsEnrolled(enrolledResponse.data.isEnrolled); 
             setLoading(false);
 
         } catch (error) {
-            console.error('Error fetching data:', error);
-            alert('Error fetching data. Please check console for details.');
+            console.error('Error fetching instructor enrollment status:', error);
+            alert('Error instructor enrollment status. Please check console for details.');
+
+        } finally {
+            setLoading(false); // End loading
         }
     };
 
@@ -52,11 +54,6 @@ const EnrollmentInstructor = () => {
         setErrorMessage('Name is required.');
         return;
     }
-
-    if (formData.contact_number.length === 0) {
-        setErrorMessage('Name is required.');
-        return;
-    }
     
     try {
       await axiosInstance.post('/api/instructors/enroll', formData);
@@ -78,7 +75,7 @@ const EnrollmentInstructor = () => {
             <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-md flex items-center" role="alert" style={{ maxWidth: '30rem' }}>
                 <FontAwesomeIcon icon={faExclamationCircle} className="h-6 w-6 text-yellow-500 mr-3" />
                 <div>
-                    <p className="font-bold">Enrollment Status</p>
+                    <p className="font-bold">Instructor Enrollment Status</p>
                     <p>You are already enrolled and cannot enroll again.</p>
                 </div>
             </div>
@@ -90,7 +87,7 @@ const EnrollmentInstructor = () => {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-md" role="alert">
-          <p>You've successfully enrolled, you can proceed to see your enrolled subjects.</p>
+          <p>You've successfully enrolled, you can proceed to assign student grades and see your schedules.</p>
         </div>
       </div>
     );
@@ -119,11 +116,11 @@ const EnrollmentInstructor = () => {
                 {errorMessage && <p className="relative text-red-500 text-center text-[14px]">{errorMessage}</p>}
 
                 <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="first_name">First Name</label>
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">Name</label>
                   <input
                     type="text"
-                    id="first_name"
-                    name="first_name"
+                    id="name"
+                    name="name"
                     value={formData.name}
                     onChange={handleChange}
                     className="shadow appearance-none border bg-white rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -145,7 +142,7 @@ const EnrollmentInstructor = () => {
                 </div>
 
                 <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="phone_number">Contact Number</label>
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="contact_number">Contact Number</label>
                   <input
                     type="text"
                     id="contact_number"

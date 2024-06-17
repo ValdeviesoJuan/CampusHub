@@ -20,6 +20,8 @@ const LoginForm = () => {
             try {
                 const { data } = await axiosInstance.get('/csrf-token');
                 localStorage.removeItem('authToken');
+                localStorage.removeItem('studentName');
+                localStorage.removeItem('userRole');
                 console.log(data.csrf_token);
                 axiosInstance.defaults.headers['X-CSRF-TOKEN'] = data.csrf_token;
             } catch (error) {
@@ -52,7 +54,7 @@ const LoginForm = () => {
           localStorage.setItem('authToken', token);
 
           const userData = await getUser(); 
-          console.log(userData);
+          console.log(userData.role);
 
           handleLogin(userData);
           if (userData.role === 'admin') {
