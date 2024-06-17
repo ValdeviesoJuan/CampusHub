@@ -1,151 +1,61 @@
-import React, { useState } from 'react';
-//import Calendar from 'react-calendar';
-//import Sidebar from './Sidebar';
-import 'react-calendar/dist/Calendar.css';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faPrint, faExclamationCircle, faTrash, faEdit, faPlus, faSave } from '@fortawesome/free-solid-svg-icons';
+import { faPrint, faExclamationCircle, faTrash, faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
+import axiosInstance from '../axios';
 
 const Schedule = () => {
-  const [date, setDate] = useState(new Date());
-  const [events, setEvents] = useState([
-    {
-      id: 1,
-      section: "A",
-      course: "BSIT",
-      monday: { time: "8:00 - 9:00", subject: "Subject 1" },
-      tuesday: { time: "9:00 - 10:00", subject: "Physics 1" },
-      wednesday: { time: "", subject: "" },
-      thursday: { time: "10:00 - 11:00", subject: "English 1" },
-      friday: { time: "11:00 - 12:00", subject: "Rizal 1" },
-      saturday: { time: "", subject: "" },
-      sunday: { time: "", subject: "" }
-    }
-  ]);
-  const [newEvent, setNewEvent] = useState({
-    section: "",
-    course: "",
-    monday: { time: "", subject: "" },
-    tuesday: { time: "", subject: "" },
-    wednesday: { time: "", subject: "" },
-    thursday: { time: "", subject: "" },
-    friday: { time: "", subject: "" },
-    saturday: { time: "", subject: "" },
-    sunday: { time: "", subject: "" }
-  });
+  const [events, setEvents] = useState([]);
   const [editEventId, setEditEventId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [sections, setSections] = useState([]);
+  const [subjects, setSubjects] = useState([]);
   const [selectedSection, setSelectedSection] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [sections] = useState(["A", "B", "C", "D"]); // Define your sections here
-  const [showModal, setShowModal] = useState(false); // State to toggle the modal visibility
+  const [newSchedule, setNewSchedule] = useState({
+    section_name: "",
+    subject_name: "",
+    day: "",
+    start_time: "",
+    end_time: ""
+  });
 
-  const predefinedCourses = [
-    "BSIT", "BSCE", "ARCH", "BSCM", "BSBS", "BSBS"
-  ];
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
-  const predefinedSubjects = {
-    "BSIT": ["Subject 1", "Subject 2", "Subject 3"],
-    "BSCE": ["Physics 1", "Physics 2", "Physics 3"],
-    "ARCH": ["English 1", "English 2", "English 3"],
-    "BSCM": ["Chemistry 1", "Chemistry 2", "Chemistry 3"],
-    "BSBS": ["Rizal 1", "Rizal 2", "Rizal 3"],
-    "": []
+  const fetchEvents = async () => {
+    try {
+      const response = await axiosInstance.get('/api/admin/section-schedules');
+      setEvents(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
   };
-
-  const onChange = (newDate) => setDate(newDate);
 
   const handlePrint = () => window.print();
 
-  const handleDelete = (id) => setEvents(events.filter(event => event.id !== id));
-
-  const handleEdit = (id) => {
-    setEditEventId(id);
-    const eventToEdit = events.find(event => event.id === id);
-    setNewEvent({ ...eventToEdit });
-  };
-
-  const resetNewEventState = () => {
-    setNewEvent({
-      section: "",
-      course: "",
-      monday: { time: "", subject: "" },
-      tuesday: { time: "", subject: "" },
-      wednesday: { time: "", subject: "" },
-      thursday: { time: "", subject: "" },
-      friday: { time: "", subject: "" },
-      saturday: { time: "", subject: "" },
-      sunday: { time: "", subject: "" }
+  const handleEdit = (event) => {
+    setEditEventId(event.subjects_enrolled_id);
+    setNewSchedule({
+      section_name: event.section_name,
+      subject_name: event.title,
+      day: "",
+      start_time: "",
+      end_time: ""
     });
+    setShowModal(true);
   };
 
-  const handleAdd = () => {
-    setEvents([
-      ...events,
-      {
-        id: Date.now(),
-        section: newEvent.section,
-        course: newEvent.course,
-        monday: newEvent.monday,
-        tuesday: newEvent.tuesday,
-        wednesday: newEvent.wednesday,
-        thursday: newEvent.thursday,
-        friday: newEvent.friday,
-        saturday: newEvent.saturday,
-        sunday: newEvent.sunday
-      }
-    ]);
-    resetNewEventState();
-    setShowModal(false);
-  };
-
-  const handleSectionChange = (value) => setSelectedSection(value);
-
-  const handleSearch = (e) => setSearchTerm(e.target.value);
-
-  const handleDayChange = (day, field, value) => {
-    setNewEvent(prevState => ({
-      ...prevState,
-      [day]: {
-        ...prevState[day],
-        [field]: value
-      }
-    }));
-  };
-
-  const handleCourseChange = (course) => {
-    setNewEvent(prevState => ({
-      ...prevState,
-      course,
-      monday: { time: "", subject: "" },
-      tuesday: { time: "", subject: "" },
-      wednesday: { time: "", subject: "" },
-      thursday: { time: "", subject: "" },
-      friday: { time: "", subject: "" },
-      saturday: { time: "", subject: "" },
-      sunday: { time: "", subject: "" }
-    }));
-  };
-
-  const handleSave = () => {
-    const updatedEvents = events.map(event => {
-      if (event.id === editEventId) {
-        return {
-          ...event,
-          section: newEvent.section,
-          course: newEvent.course,
-          monday: newEvent.monday,
-          tuesday: newEvent.tuesday,
-          wednesday: newEvent.wednesday,
-          thursday: newEvent.thursday,
-          friday: newEvent.friday,
-          saturday: newEvent.saturday,
-          sunday: newEvent.sunday
-        };
-      }
-      return event;
-    });
-    setEvents(updatedEvents);
-    setEditEventId(null);
-    resetNewEventState();
+  const handleSave = async () => {
+    try {
+      const class_schedule = `${newSchedule.day} ${newSchedule.start_time}-${newSchedule.end_time}`;
+      await axiosInstance.put(`/api/admin/${editEventId}/schedule`, { class_schedule });
+      fetchEvents(); // Refresh the events
+      setShowModal(false);
+    } catch (error) {
+      console.error('Error saving schedule:', error);
+    }
   };
 
   return (
@@ -153,25 +63,14 @@ const Schedule = () => {
       <div className="flex-grow container mx-auto p-5 m-4 bg-slate-100">
         <div className='p-5 flex justify-between'>
           <h1 className='text-black'>Schedule</h1>
-          <div className="flex items-center">
-            <button type="button" className="border-gray-900 bg-white text-gray-900 hover:text-gray-700 py-1 px-2">
-              <FontAwesomeIcon icon={faBell} className="mr-1" />
-              Notifications
-            </button>
-            <div className='p-1'></div>
-            <button type="button" onClick={handlePrint} className="border-gray-900 bg-white text-gray-900 hover:text-gray-700 py-1 px-2 mr-2">
-              <FontAwesomeIcon icon={faPrint} className="mr-1" />
-              Print Schedule
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowModal(true)}
-              className="border-gray-900 bg-white text-gray-900 hover:text-gray-700 py-1 px-2"
-            >
-              <FontAwesomeIcon icon={faPlus} className="mr-1" />
-              Add Schedule
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={handlePrint}
+            className="border-gray-900 bg-white text-gray-900 hover:text-gray-700 py-1 px-2"
+          >
+            <FontAwesomeIcon icon={faPrint} className="mr-1" />
+            Print Schedule
+          </button>
         </div>
 
         {events.length === 0 && (
@@ -195,8 +94,8 @@ const Schedule = () => {
                     <select
                       id="section"
                       value={selectedSection}
-                      onChange={(e) => handleSectionChange(e.target.value)}
-                      className="border border-slate-500 bg-white text-black  p-2"
+                      onChange={(e) => setSelectedSection(e.target.value)}
+                      className="border border-slate-500 bg-white text-black p-2"
                     >
                       <option value="">All Sections</option>
                       {sections.map(section => (
@@ -204,66 +103,41 @@ const Schedule = () => {
                       ))}
                     </select>
                   </div>
-                  <div className='border '>
+                  <div className='border'>
                     <input
                       type="text"
                       placeholder="Search..."
                       value={searchTerm}
-                      onChange={handleSearch}
-                      className=" bg-white border-black text-black p-2"
-                    /> 
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="bg-white border-black text-black p-2"
+                    />
                   </div>
                 </div>
-                <table className="w-full text-sm text-left text-white bg-black">
-                  <thead className="text-xs text-black uppercase bg-white">
+                <table className="w-full text-sm text-left text-black bg-black">
+                  <thead className="text-xs uppercase bg-gray-700 text-black">
                     <tr>
                       <th scope="col" className="px-6 py-3">Section</th>
                       <th scope="col" className="px-6 py-3">Course</th>
-                      <th scope="col" className="px-6 py-3">Monday</th>
-                      <th scope="col" className="px-6 py-3">Tuesday</th>
-                      <th scope="col" className="px-6 py-3">Wednesday</th>
-                      <th scope="col" className="px-6 py-3">Thursday</th>
-                      <th scope="col" className="px-6 py-3">Friday</th>
-                      <th scope="col" className="px-6 py-3">Saturday</th>
-                      <th scope="col" className="px-6 py-3">Sunday</th>
+                      <th scope="col" className="px-6 py-3">Subject</th>
+                      <th scope="col" className="px-6 py-3">Class Schedule</th>
+                      <th scope="col" className="px-6 py-3">Instructor</th>
                       <th scope="col" className="px-6 py-3">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {events.filter(event =>
-                      (!selectedSection || event.section === selectedSection) &&
-                      (event.section.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        event.course.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        event.monday.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        event.tuesday.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        event.wednesday.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        event.thursday.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        event.friday.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        event.saturday.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        event.sunday.subject.toLowerCase().includes(searchTerm.toLowerCase()))
+                      (selectedSection === "" || event.section_name === selectedSection) &&
+                      (searchTerm === "" || event.title.toLowerCase().includes(searchTerm.toLowerCase()))
                     ).map(event => (
-                      <tr key={event.id} className="bg-white text-black">
-                        <td className="px-6 py-4">{event.section}</td>
-                        <td className="px-6 py-4">{event.course}</td>
-                        <td className="px-6 py-4">{event.monday.time} - {event.monday.subject}</td>
-                        <td className="px-6 py-4">{event.tuesday.time} - {event.tuesday.subject}</td>
-                        <td className="px-6 py-4">{event.wednesday.time} - {event.wednesday.subject}</td>
-                        <td className="px-6 py-4">{event.thursday.time} - {event.thursday.subject}</td>
-                        <td className="px-6 py-4">{event.friday.time} - {event.friday.subject}</td>
-                        <td className="px-6 py-4">{event.saturday.time} - {event.saturday.subject}</td>
-                        <td className="px-6 py-4">{event.sunday.time} - {event.sunday.subject}</td>
-                        <td className="px-6 py-4">
-                          <button
-                            className="text-black hover:text-red-900 bg-white border-black mr-2"
-                            onClick={() => handleEdit(event.id)}
-                          >
+                      <tr key={event.id} className="bg-white border-b text-black">
+                        <td className="px-6 py-4">{event.section_name}</td>
+                        <td className="px-6 py-4">{event.subject_code}</td>
+                        <td className="px-6 py-4">{event.title}</td>
+                        <td className="px-6 py-4">{event.class_schedule}</td>
+                        <td className="px-6 py-4">{event.instructor_name}</td>
+                        <td className="px-6 py-4 flex space-x-2">
+                          <button onClick={() => handleEdit(event)} className="text-blue-500">
                             <FontAwesomeIcon icon={faEdit} />
-                          </button>
-                          <button
-                            className="text-black hover:text-red-900 bg-white border-black"
-                            onClick={() => handleDelete(event.id)}
-                          >
-                            <FontAwesomeIcon icon={faTrash} />
                           </button>
                         </td>
                       </tr>
@@ -275,196 +149,82 @@ const Schedule = () => {
           </div>
         </div>
 
+        {/* Modal for Edit Event */}
         {showModal && (
-          <div className="fixed z-10 inset-0 overflow-y-auto">
-            <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-              <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-                <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3">
+              <h2 className="text-lg font-semibold mb-4">Edit Schedule</h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2">
+                  <label className="block text-gray-700">Section</label>
+                  <input
+                    type="text"
+                    value={newSchedule.section_name}
+                    readOnly
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-gray-700">Subject</label>
+                  <input
+                    type="text"
+                    value={newSchedule.subject_name}
+                    readOnly
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-gray-700">Day</label>
+                  <select
+                    value={newSchedule.day}
+                    onChange={(e) => setNewSchedule({ ...newSchedule, day: e.target.value })}
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                  >
+                    <option value="">Select Day</option>
+                    {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(day => (
+                      <option key={day} value={day}>{day}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-gray-700">Start Time</label>
+                  <input
+                    type="time"
+                    value={newSchedule.start_time}
+                    onChange={(e) => setNewSchedule({ ...newSchedule, start_time: e.target.value })}
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700">End Time</label>
+                  <input
+                    type="time"
+                    value={newSchedule.end_time}
+                    onChange={(e) => setNewSchedule({ ...newSchedule, end_time: e.target.value })}
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                  />
+                </div>
               </div>
-              <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-              <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                  <div className="sm:flex sm:items-start">
-                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                      <h2 className="text-bold text-lg leading-6 font-large text-gray-900">
-                        Add New Schedule
-                      </h2>
-                      <br></br>
-                      <div className="mt-2">
-                        <div className="mb-4">
-                          <h2 className="block text-gray-700 text-sm font-bold mb-2" htmlFor="section">Section</h2>
-                          <select
-                            id="section"
-                            value={newEvent.section}
-                            onChange={(e) => setNewEvent({ ...newEvent, section: e.target.value })}
-                            className=" border border-b bg-white text-black py-2 px-3 "
-                          >
-                            <option className="border   border-b bg-white text-black   rounded w-full py-2 px-3 " value="">Select Section</option>
-                            {sections.map(section => (
-                              <option className='border border-b bg-white text-black rounded w-full py-2 px-3 ' key={section} value={section}>{section}</option>
-                            ))}
-                          </select>
-                        </div>
-                        <div className="mb-4">
-                          <h2 className=" block text-black text-sm font-bold mb-2" htmlFor="course">Course</h2>
-                          <select
-                            id="course"
-                            value={newEvent.course}
-                            onChange={(e) => handleCourseChange(e.target.value)}
-                            className=" border border-black bg-white text-black   w-full py-2 px-3 "
-                          >
-                            <option className="border border-slate-500 bg-white text-black  rounded w-full py-2 px-3" value="">Select Course  ↓</option>
-                            {predefinedCourses.map(course => (
-                              <option key={course} value={course}>{course}</option>
-                            ))}
-                          </select>
-                        </div>
-                        {["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].map(day => (
-                          <div key={day} className="mb-4">
-                            <h2 className="block text-gray-700 bg-whitetext-sm font-bold mb-2 capitalize" htmlFor={day}>{day}</h2>
-                            <div className="flex items-center">
-                              <input
-                                type="text"
-                                placeholder="Time"
-                                value={newEvent[day].time}
-                                onChange={(e) => handleDayChange(day, "time", e.target.value)}
-                                className=" border-b border-black bg-white text-black  py-2 px-3  mr-2"
-                              />
-                              <select
-                                id={`${day}-subject`}
-                                value={newEvent[day].subject}
-                                onChange={(e) => handleDayChange(day, "subject", e.target.value)}
-                                className=" border-b border-black bg-white text-black  py-2 px-3  mr-2"
-                              >
-                                <option value="">Select Subject</option>
-                                {predefinedSubjects[newEvent.course]?.map(subject => (
-                                  <option key={subject} value={subject}>{subject}</option>
-                                ))}
-                              </select>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                  <button
-                    type="button"
-                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-black text-base font-medium text-white hover:bg-grayfocus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
-                    onClick={handleAdd}
-                  >
-                    Add
-                  </button>
-                  <button
-                    type="button"
-                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
-                    onClick={() => setShowModal(false)}
-                  >
-                    Cancel
-                  </button>
-                </div>
+              <div className="mt-4 flex justify-end space-x-2">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+                >
+                  Save
+                </button>
               </div>
             </div>
           </div>
         )}
-
-        {editEventId && (
-          <div className="fixed z-10 inset-0 overflow-y-auto">
-            <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-              <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-                <div class
-Name="absolute inset-0 bg-gray-500 opacity-75"></div>
-</div>
-<span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-<div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-  <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-    <div className="sm:flex sm:items-start">
-      <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-        <h3 className="text-lg bg-white leading-6 font-medium text-gray-900">
-          Edit Schedule
-        </h3>
-        <div className="mt-2">
-          <div className="mb-4">
-            <h2 className="block text-gray-700 text-sm font-bold mb-2" htmlFor="section">Section</h2>
-            <select
-              id="section"
-              value={newEvent.section}
-              onChange={(e) => setNewEvent({ ...newEvent, section: e.target.value })}
-              className=" bg-white w-full py-2 px-3 text-black "
-            >
-              <option value="">Select Section</option>
-              {sections.map(section => (
-                <option key={section} value={section}>{section}</option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
-            <h2 className="block text-gray-700 text-sm font-bold mb-2" htmlFor="course">Course</h2>
-            <select
-              id="course"
-              value={newEvent.course}
-              onChange={(e) => handleCourseChange(e.target.value)}
-              className="w-full bg-white py-2 px-3 text-black "
-            >
-              <option value="">Select Course</option>
-              {predefinedCourses.map(course => (
-                <option key={course} value={course}>{course}</option>
-              ))}
-            </select>
-          </div>
-          {["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].map(day => (
-            <div key={day} className="mb-4 ">
-              <h2 className="block text-gray-700 text-sm font-bold mb-2 capitalize" htmlFor={day}>{day}</h2>
-              <div className="flex items-center ">
-                <input
-                  type="text"
-                  placeholder="Time"
-                  value={newEvent[day].time}
-                  onChange={(e) => handleDayChange(day, "time", e.target.value)}
-                  className="border-b border-black bg-white text-black   py-2 px-3  mr-2"
-                />
-                <select
-                  id={`${day}-subject`}
-                  value={newEvent[day].subject}
-                  onChange={(e) => handleDayChange(day, "subject", e.target.value)}
-                  className=" border-b border-black bg-white text-black  py-2 px-3  mr-2"
-                >
-                  <option className=" border-b border-black bg-white text-black " value="">Select Subject</option>
-                  {predefinedSubjects[newEvent.course]?.map(subject => (
-                    <option key={subject} value={subject}>{subject}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
-  </div>
-  <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-    <button
-      type="button"
-      className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-black text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
-      onClick={handleSave}
-    >
-      Save
-    </button>
-    <button
-      type="button"
-      className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
-      onClick={() => setEditEventId(null)}
-    >
-      Cancel
-    </button>
-  </div>
-</div>
-</div>
-</div>
-)}
-</div>
-</div>
-);
+  );
 };
 
 export default Schedule;

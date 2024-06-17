@@ -60,8 +60,8 @@ function App() {
             <Route path="/login" element={<LoginForm />} />
             <Route path="/register" element={<RegisterForm />} />
             <Route path="/admin/dashboard" element={isAuthenticated && userRole === 'admin' ? <Dashboard_admin /> : <Navigate to="/login" />} />
-            <Route path="/admin/schedules" element={isAuthenticated && userRole === 'admin' ? <Schedule_admin /> : <Navigate to="/login" />} />
             <Route path="/admin/instructor-assign" element={isAuthenticated && userRole === 'admin' ? <EnrollmentAdmin /> : <Navigate to="/login" />} />
+            <Route path="/admin/schedules" element={isAuthenticated && userRole === 'admin' ? <Schedule_admin /> : <Navigate to="/login" />} />
             <Route path="/student/dashboard" element={isAuthenticated && userRole === 'student' ? <Dashboard /> : <Navigate to="/login" />} />
             <Route path="/student/profile" element={isAuthenticated && userRole === 'student' ? <Profile /> : <Navigate to="/login" />} />
             <Route path="/student/pseudo-enrollment" element={isAuthenticated && userRole === 'student' ? <EnrollmentForm /> : <Navigate to="/login" />} />

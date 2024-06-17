@@ -54,7 +54,6 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->middleware('auth')
                 ->name('logout');
 
-// Student routes
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/subjects', [SubjectController::class, 'index']);
     Route::get('/programs', [ProgramController::class, 'index']);
@@ -86,5 +85,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('instructor-sections-handled/{id}', [InstructorSectionsHandledController::class, 'update']);
     Route::delete('instructor-sections-handled/{id}', [InstructorSectionsHandledController::class, 'destroy']);
     Route::post('instructor-sections-handled/check-existence', [InstructorSectionsHandledController::class, 'checkExistence']);
+
+    Route::get('/admin/section-schedules', [SubjectController::class, 'getSectionSchedules']);
+    Route::put('/admin/{id}/schedule', [SubjectController::class, 'updateSchedule']);
 });
 
