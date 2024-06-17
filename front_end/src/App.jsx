@@ -23,6 +23,7 @@ import EnrollmentAdmin from './components/Enrollment_admin';
 import Dashboard_instructor from './components/Dashboard_instructor';
 import EnrollmentInstructor from './components/Enrollment_instructor';
 import Profile_instructor from './components/Profile_instructor';
+import Schedule_instructor from './components/Schedule_instructor';
 
 function App() {
   const { isAuthenticated, handleLogout, userRole } = useAuth();
@@ -70,7 +71,7 @@ function App() {
             <Route path="/instructor/profile" element={isAuthenticated && userRole === 'instructor' ? <Profile_instructor/> : <Navigate to="/login" />} />
             <Route path="/instructor/pseudo-enrollment" element={isAuthenticated && userRole === 'instructor' ? <EnrollmentInstructor /> : <Navigate to="/login" />} />
             <Route path="/instructor/grades" element={isAuthenticated && userRole === 'instructor' ? <Grades_admin /> :  <Navigate to="/login" />} />
-            <Route path="/instructor/schedules" element={isAuthenticated && userRole === 'instructor' ? <Schedule_admin/> : <Navigate to="/login" />} />
+            <Route path="/instructor/schedules" element={isAuthenticated && userRole === 'instructor' ? <Schedule_instructor/> : <Navigate to="/login" />} />
             <Route path="/admin" element={isAuthenticated && userRole === 'admin' ? <Admin /> : <Navigate to="/login" />} />
             <Route path="/students" element={isAuthenticated && userRole === 'admin' ? <Students /> : <Navigate to="/login" />} />
             <Route path="/settings" element={isAuthenticated ? <Settings /> : <Navigate to="/login" />} />

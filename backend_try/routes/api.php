@@ -78,6 +78,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/instructors', [InstructorController::class, 'index'])->name('instructors.index');
     Route::post('/instructors/enroll', [InstructorController::class, 'enroll'])->name('instructors.enroll');
     Route::get('/instructors/enrolled', [InstructorController::class, 'isEnrolled'])->name('instructors.isEnrolled');
+    Route::get('/instructors/subjects', [InstructorController::class, 'getEnrolledSubjects']);
 
     Route::get('instructor-sections-handled', [InstructorSectionsHandledController::class, 'index']);
     Route::post('instructor-sections-handled', [InstructorSectionsHandledController::class, 'store']);

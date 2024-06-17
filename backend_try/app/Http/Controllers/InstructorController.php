@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Instructor;
+use App\Models\InstructorSectionsHandled;
+use App\Models\SubjectEnrolled;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class InstructorController extends Controller
 {
@@ -44,9 +47,34 @@ class InstructorController extends Controller
         $instructor = Instructor::where('user_id', $user->id)->first();
         
         if ($instructor) {
-            return response()->json(['isEnrolled' => true, 'studentId' => $instructor->id]);
+            return response()->json(['isEnrolled' => true, 'instructorId' => $instructor->id]);
         } else {
-            return response()->json(['isEnrolled' => false, 'studentId' => null]);
+            return response()->json(['isEnrolled' => false, 'instructorId' => null]);
         }
+    }
+
+    public function getEnrolledSubjects(Request $request)
+    {
+        $user = auth()->user();
+        $instructor = Instructor::where('user_id', $user->id)->first();
+
+        $enrolledSubjects = DB::table('instructor_sections_handled AS ish')
+            ->join('subjects_enrolled as sube', 'sube.instructor_id', '=', 'ish.instructor_id')
+            ->join('students as st', function ($join) {
+                $join->on('st.id', '=', 'sube.student_id')
+                    ->on('st.section_id', '=', 'ish.section_id')
+                    ->on('st.school_year_id', '=', 'ish.school_year_id');
+            })
+            ->join('sections as se', 'se.id', '=', 'ish.section_id')
+            ->join('subjects as sub', 'sub.id', '=', 'ish.subject_id')
+            ->where('ish.instructor_id', $instructor->id)
+            ->select('sub.subject_code', 
+                     'sub.title', 
+                     'se.name', 
+                     'sube.class_schedule')
+            ->groupBy('sub.subject_code', 'sub.title', 'se.name', 'sube.class_schedule')
+            ->get();
+
+        return response()->json(['enrolledSubjects' => $enrolledSubjects, 'instructorName' => $instructor->name]);
     }
 }

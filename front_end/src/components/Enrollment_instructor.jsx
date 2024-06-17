@@ -28,12 +28,14 @@ const EnrollmentInstructor = () => {
             alert('Error instructor enrollment status. Please check console for details.');
 
         } finally {
-            setLoading(false); // End loading
+            setLoading(false);
         }
     };
 
     fetchData();
   }, []);
+
+  console.log(isEnrolled);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
