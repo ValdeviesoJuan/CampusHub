@@ -1,11 +1,65 @@
 import React, { Component } from 'react';
+import axiosInstance from '../axios';
+import BlackLoadingSpinner from './BlackLoadingSpinner';
 
 class Grades extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      enrolledSubjects: [],
+      averageGrade: 'B+',
+      studentId: null,
+      isEnrolled: false,
+      studentName: '', 
+      loading: true,
+    };
+  }
+
+  componentDidMount() {
+    this.checkEnrollment();
+  }
+
+  checkEnrollment = async () => {
+    try {
+      const response = await axiosInstance.get('/api/students/enrolled'); 
+      const { isEnrolled, studentId } = response.data;
+      console.log(response.data);
+      if (isEnrolled) {
+        this.setState({ isEnrolled, studentId });
+        this.fetchEnrolledSubjects(studentId);
+      } else {
+        alert('You are not enrolled as a student.');
+        this.setState({ loading: false });
+        // Handle redirect or display message for non-enrolled user
+      }
+    } catch (error) {
+      console.error('Error checking enrollment:', error);
+      alert('Error checking enrollment. Please check console for details.');
+    }
+  };
+
+  fetchEnrolledSubjects = async (studentId) => {
+    try {
+      const response = await axiosInstance.get(`/api/students/${studentId}/subjects`);
+      this.setState({ 
+        enrolledSubjects: response.data.enrolledSubjects,
+        studentName: response.data.studentName,
+        loading: false,  
+      });
+    } catch (error) {
+      console.error('Error fetching enrolled subjects:', error);
+      alert('Error fetching enrolled subjects. Please check console for details.');
+      this.setState({ loading: false });
+    }
+  };
+
   handlePrint = () => {
     window.print();
   }
 
   render() {
+    const { enrolledSubjects, averageGrade, studentName, loading } = this.state;
+
     return (
       <main className="relative flex flex-col items-center p-8">
         <div className="w-full flex justify-between items-center mb-4">
@@ -35,94 +89,38 @@ class Grades extends Component {
                 <th scope="col" className="px-6 py-3">Section</th>
                 <th scope="col" className="px-6 py-3">Midterm</th>
                 <th scope="col" className="px-6 py-3">Final</th>
-                <th scope="col" className="px-6 py-3">Re-exam</th>
                 <th scope="col" className="px-6 py-3">Remarks</th>
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b bg-white border-gray-900">
-                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">1</th>
-                <td className="px-6 py-4">IT221</td>
-                <td className="px-6 py-4">Information Management</td>
-                <td className="px-6 py-4">3</td>
-                <td className="px-6 py-4">IT2R2</td>
-                <td className="px-6 py-4">1.00</td>
-                <td className="px-6 py-4">Not Yet</td>
-                <td className="px-6 py-4">Not Yet</td>
-                <td className="px-6 py-4">Not Yet Posted</td>
-              </tr>
-              <tr className="border-b bg-white border-gray-900">
-                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">2</th>
-                <td className="px-6 py-4">IT222</td>
-                <td className="px-6 py-4">Networking 1</td>
-                <td className="px-6 py-4">3</td>
-                <td className="px-6 py-4">IT2R2</td>
-                <td className="px-6 py-4">1.00</td>
-                <td className="px-6 py-4">Not Yet</td>
-                <td className="px-6 py-4">Not Yet</td>
-                <td className="px-6 py-4">Not Yet Posted</td>
-              </tr>
-              <tr className="border-b bg-white border-gray-900">
-                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">3</th>
-                <td className="px-6 py-4">IT223</td>
-                <td className="px-6 py-4">Web Systems and Technolgies</td>
-                <td className="px-6 py-4">3</td>
-                <td className="px-6 py-4">IT2R2</td>
-                <td className="px-6 py-4">1.00</td>
-                <td className="px-6 py-4">Not Yet</td>
-                <td className="px-6 py-4">Not Yet</td>
-                <td className="px-6 py-4">Not Yet Posted</td>
-              </tr>
-              <tr className="border-b bg-white border-gray-900">
-                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">4</th>
-                <td className="px-6 py-4">IT224</td>
-                <td className="px-6 py-4">Systems Integration and Architecture</td>
-                <td className="px-6 py-4">3</td>
-                <td className="px-6 py-4">IT2R2</td>
-                <td className="px-6 py-4">1.00</td>
-                <td className="px-6 py-4">Not Yet</td>
-                <td className="px-6 py-4">Not Yet</td>
-                <td className="px-6 py-4">Not Yet Posted</td>
-              </tr>
-              <tr className="border-b bg-white border-gray-900">
-                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">5</th>
-                <td className="px-6 py-4">Ethc</td>
-                <td className="px-6 py-4">Ethics</td>
-                <td className="px-6 py-4">3</td>
-                <td className="px-6 py-4">IT2R2</td>
-                <td className="px-6 py-4">1.00</td>
-                <td className="px-6 py-4">Not Yet</td>
-                <td className="px-6 py-4">Not Yet</td>
-                <td className="px-6 py-4">Not Yet Posted</td>
-              </tr>
-              <tr className="border-b bg-white border-gray-900">
-                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">6</th>
-                <td className="px-6 py-4">Rizal</td>
-                <td className="px-6 py-4">Life and Works of Rizal</td>
-                <td className="px-6 py-4">3</td>
-                <td className="px-6 py-4">IT2R2</td>
-                <td className="px-6 py-4">1.00</td>
-                <td className="px-6 py-4">Not Yet</td>
-                <td className="px-6 py-4">Not Yet</td>
-                <td className="px-6 py-4">Not Yet Posted</td>
-              </tr>
-              <tr className="border-b bg-white border-gray-900">
-                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">7</th>
-                <td className="px-6 py-4">PATH FIT 4</td>
-                <td className="px-6 py-4">Physical Activity Towards Health and Fitness 2</td>
-                <td className="px-6 py-4">2</td>
-                <td className="px-6 py-4">IT2R2</td>
-                <td className="px-6 py-4">1.00</td>
-                <td className="px-6 py-4">Not Yet</td>
-                <td className="px-6 py-4">Not Yet</td>
-                <td className="px-6 py-4">Not Yet Posted</td>
-              </tr>
+              {loading ? (
+                        <tr>
+                          <td colSpan="12" className="text-center">
+                            <BlackLoadingSpinner />
+                          </td>
+                        </tr>
+                      ) : (
+                enrolledSubjects.map((subject, index) => (
+                  <tr className="border-b bg-white border-gray-900" key={index}>
+                    <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">
+                      {index + 1}
+                    </th>
+                    <td className="px-6 py-4">{subject.subject.subject_code}</td>
+                    <td className="px-6 py-4">{subject.subject.title}</td>
+                    <td className="px-6 py-4">{subject.subject.credit_unit}</td>
+                    <td className="px-6 py-4">{subject.student.section.name}</td>
+                    <td className="px-6 py-4">{subject.midterm_grade}</td>
+                    <td className="px-6 py-4">{subject.final_grade}</td>
+                    <td className="px-6 py-4">{subject.remarks}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
-        <br></br><br></br><br></br><br></br><br></br><br></br><br></br>
+        <br />
         <div className="mt-4 text-left w-full">
-          <p className="text-black font-medium">Student Name: John Doe</p>
+          <p className="text-black font-medium">Student Name: {studentName}</p>
         </div>
       </main>
     );

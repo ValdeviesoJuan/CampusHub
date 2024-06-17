@@ -14,18 +14,19 @@ const LoginForm = () => {
     const [isPasswordFocused, setIsPasswordFocused] = useState(false);
     const navigate = useNavigate();
     const { handleLogin } = useAuth();
-    const location = useLocation();
-    
 
     useEffect(() => {
         async function fetchCsrfToken() {
             try {
                 const { data } = await axiosInstance.get('/csrf-token');
                 localStorage.removeItem('authToken');
+                localStorage.removeItem('studentName');
+                localStorage.removeItem('userRole');
                 console.log(data.csrf_token);
                 axiosInstance.defaults.headers['X-CSRF-TOKEN'] = data.csrf_token;
             } catch (error) {
                 console.error('Error fetching CSRF token:', error);
+                setError('Failed to fetch CSRF token.');
             }
         }
         fetchCsrfToken();
@@ -35,28 +36,44 @@ const LoginForm = () => {
         try {
           const token = await getCsrfToken();
           console.log(token);
+          return token;
         } catch (error) {
           console.error('Error fetching CSRF token:', error);
+          setError('Failed to fetch CSRF token.');
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+
         try {
           const token = getToken();
           console.log(token);
           await login(email, password);
-
           localStorage.setItem('authToken', token);
 
           const userData = await getUser(); 
-          console.log(userData);
+          console.log(userData.role);
 
-          handleLogin();
-          navigate('/dashboard');
+          handleLogin(userData);
+          if (userData.role === 'admin') {
+            navigate('/admin/dashboard');
+          } else if (userData.role === 'student') {
+            navigate('/student/dashboard');
+          } else if (userData.role === 'instructor') {
+            navigate('/instructor/dashboard');
+          } else {
+            navigate('/login');
+          }
 
         } catch (error) {
           console.error('Error logging in:', error);
+          if (error.response && error.response.status === 422) {
+            setError('Invalid email or password. Please try again.');
+          } else {
+            setError('An error occurred during login. Please try again.');
+          }
         }
     };
 

@@ -1,66 +1,110 @@
 import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
+import axiosInstance from '../axios';
 
 class Grades extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      semesters: {
-        "2023-2024 2nd Semester": [
-          { id: 1, studentName: 'Josiah Joshua D. Ratunil', subjectCode: 'Studious Person ni', description: 'Studious Person ni', units: '3', section: 'A', midterm: 'B', final: 'A', reExam: 'None', remarks: 'Good' },
-          { id: 2, studentName: 'Kent Paul Vicente', subjectCode: 'Studious Person ni', description: 'Cake and Flowers for you', units: '3', section: 'A', midterm: 'B', final: 'A', reExam: 'None', remarks: 'Good' },
-          { id: 3, studentName: 'Gelo Pagutayao', subjectCode: 'Shotganon bi!', description: 'Studious Person ni', units: '3', section: 'A', midterm: 'B', final: 'A', reExam: 'None', remarks: 'Good' },
-          { id: 4, studentName: 'Juan Carlos Valdevieso', subjectCode: 'Litsi na maestro jud to oh', description: 'Studious Person ni', units: '3', section: 'A', midterm: 'B', final: 'A', reExam: 'None', remarks: 'Good' },
-          { id: 5, studentName: 'Joshua Amper', subjectCode: 'Yawa akong likod', description: 'Studious Person ni', units: '3', section: 'A', midterm: 'B', final: 'A', reExam: 'None', remarks: 'Good' },
-          { id: 6, studentName: 'Kenshi Yonezu', subjectCode: 'Music is virtue', description: 'Studious Person ni', units: '3', section: 'A', midterm: 'B', final: 'A', reExam: 'None', remarks: 'Good' },
-          { id: 7, studentName: 'Lisa Manoban', subjectCode: 'Yeahhhh', description: 'Studious Person ni', units: '3', section: 'A', midterm: 'B', final: 'A', reExam: 'None', remarks: 'Good' },
-        ],
-        "2023-2024 1st Semester": [
-          { id: 1, studentName: 'Student One', subjectCode: 'Subject One', description: 'Description One', units: '3', section: 'A', midterm: 'A', final: 'A', reExam: 'None', remarks: 'Excellent' },
-          { id: 2, studentName: 'Student Two', subjectCode: 'Subject Two', description: 'Description Two', units: '3', section: 'B', midterm: 'C', final: 'B', reExam: 'None', remarks: 'Average' },
-        ],
-        "2022-2023 2nd Semester": [
-          { id: 1, studentName: 'Student Three', subjectCode: 'Subject Three', description: 'Description Three', units: '4', section: 'A', midterm: 'B', final: 'B', reExam: 'None', remarks: 'Good' },
-        ],
-        "2022-2023 1st Semester": [
-          { id: 1, studentName: 'Student Four', subjectCode: 'Subject Four', description: 'Description Four', units: '2', section: 'C', midterm: 'A', final: 'A', reExam: 'None', remarks: 'Excellent' },
-        ],
-      },
-      currentSemester: "2023-2024 2nd Semester",
+      students: [],
+      subjects: [],
+      sections: [],
+      schoolYears: [],
+      selectedSubject: '',
+      selectedSection: '',
+      selectedSchoolYear: '',
       editIndex: -1,
+      editMode: false,
       currentPage: 1,
       gradesPerPage: 5,
-      searchQuery: '', // Add searchQuery to the state
+      searchQuery: '',
+      editedStudents: {}, // Store edited student data
+      subjectIdForUpdate: null
     };
   }
 
-  handleEditChange = (e, index) => {
+  componentDidMount() {
+    this.fetchDropdownData();
+  }
+
+  fetchDropdownData = () => {
+    axiosInstance.get('/api/subjects').then(response => this.setState({ subjects: response.data }));
+    axiosInstance.get('/api/sections').then(response => this.setState({ sections: response.data }));
+    axiosInstance.get('/api/school_years').then(response => this.setState({ schoolYears: response.data }));
+  };
+
+  fetchStudents = () => {
+    const { selectedSubject, selectedSection, selectedSchoolYear } = this.state;
+    axiosInstance.get('/api/students-by-instructor', {
+      params: {
+        subject_id: selectedSubject,
+        section_id: selectedSection,
+        school_year_id: selectedSchoolYear,
+      }
+    }).then(response => {
+      this.setState({ students: response.data, subjectIdForUpdate: selectedSubject });
+    });
+  };
+
+  handleEditChange = (e, studentId) => {
     const { name, value } = e.target;
-    const updatedGrades = [...this.state.semesters[this.state.currentSemester]];
-    updatedGrades[index][name] = value;
+    const { editedStudents } = this.state;
+    const updatedStudent = { ...editedStudents[studentId], [name]: value };
     this.setState({
-      semesters: {
-        ...this.state.semesters,
-        [this.state.currentSemester]: updatedGrades,
+      editedStudents: {
+        ...editedStudents,
+        [studentId]: updatedStudent,
       },
     });
   };
 
-  handleEditClick = (index) => {
-    this.setState({ editIndex: index });
+  handleEditClick = (studentId) => {
+    this.setState({ editIndex: studentId, editMode: true });
   };
 
-  handleSaveClick = () => {
-    this.setState({ editIndex: -1 });
+  handleSaveClick = (studentId) => {
+    const { editedStudents, subjectIdForUpdate } = this.state;
+    const editedStudent = editedStudents[studentId];
+
+    // Send edited data to server using Axios (assuming endpoint /api/update-grade)
+    axiosInstance.put(`/api/update-grade/${studentId}/${subjectIdForUpdate}`, editedStudent)
+      .then(response => {
+        // Update state with response if needed
+        console.log('Grade updated successfully:', response.data);
+
+        // Update students state to reflect the updated data
+        const updatedStudents = this.state.students.map(student => {
+          if (student.student_id === studentId) {
+            return {
+              ...student,
+              midterm_grade: editedStudent.midterm_grade || student.midterm_grade,
+              final_grade: editedStudent.final_grade || student.final_grade,
+              remarks: editedStudent.remarks || student.remarks
+            };
+          }
+          return student;
+        });
+
+        // Clear edit state
+        this.setState({
+          editIndex: -1,
+          editMode: false,
+          editedStudents: {
+            ...editedStudents,
+            [studentId]: undefined, // Clear edited student data after saving
+          },
+          students: updatedStudents
+        });
+      })
+      .catch(error => {
+        console.error('Error updating grade:', error);
+        // Handle error if needed
+      });
   };
 
   handlePageChange = (page) => {
     this.setState({ currentPage: page });
-  };
-
-  handleSemesterChange = (e) => {
-    this.setState({ currentSemester: e.target.value, currentPage: 1 });
   };
 
   handleSearchChange = (e) => {
@@ -89,22 +133,20 @@ class Grades extends Component {
   };
 
   renderGradesTable = () => {
-    const { semesters, currentSemester, currentPage, gradesPerPage, editIndex, searchQuery } = this.state;
-    let grades = semesters[currentSemester];
+    const { students, currentPage, gradesPerPage, editIndex, editMode, searchQuery, editedStudents } = this.state;
+    let filteredStudents = students;
 
     if (searchQuery) {
-      grades = grades.filter((grade) =>
-        grade.studentName.toLowerCase().includes(searchQuery.toLowerCase())
+      filteredStudents = filteredStudents.filter((student) =>
+        student.student.first_name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    const indexOfLastGrade = currentPage * gradesPerPage;
-    const indexOfFirstGrade = indexOfLastGrade - gradesPerPage;
-    const currentGrades = grades.slice(indexOfFirstGrade, indexOfLastGrade);
+    const indexOfLastStudent = currentPage * gradesPerPage;
+    const indexOfFirstStudent = indexOfLastStudent - gradesPerPage;
+    const currentStudents = Array.isArray(filteredStudents) ? filteredStudents.slice(indexOfFirstStudent, indexOfLastStudent) : [];
 
-    const totalPages = Math.ceil(grades.length / gradesPerPage);
-
-    // Adjust current page if out of range
+    const totalPages = Math.ceil(filteredStudents.length / gradesPerPage);
     if (currentPage > totalPages && totalPages > 0) {
       this.setState({ currentPage: totalPages });
     }
@@ -114,7 +156,7 @@ class Grades extends Component {
         <table className="w-full text-sm text-left text-black border-4 border-gray-900">
           <thead className="text-xs uppercase dark:text-black">
             <tr>
-              <th scope="col" className="px-6 py-3">ID</th>
+              <th scope="col" className="px-6 py-3">Student ID</th>
               <th scope="col" className="px-6 py-3">Student Name</th>
               <th scope="col" className="px-6 py-3">Subject Code</th>
               <th scope="col" className="px-6 py-3">Description</th>
@@ -122,86 +164,70 @@ class Grades extends Component {
               <th scope="col" className="px-6 py-3">Section</th>
               <th scope="col" className="px-6 py-3">Midterm</th>
               <th scope="col" className="px-6 py-3">Final</th>
-              <th scope="col" className="px-6 py-3">Re-exam</th>
               <th scope="col" className="px-6 py-3">Remarks</th>
               <th scope="col" className="px-6 py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {currentGrades.map((grade, index) => (
-              <tr key={grade.id} className="border-b bg-white border-gray-900">
-                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">{grade.id}</th>
-                <td className="px-6 py-4">{grade.studentName}</td>
-                <td className="px-6 py-4">{grade.subjectCode}</td>
-                <td className="px-6 py-4">{grade.description}</td>
-                <td className="px-6 py-4">{grade.units}</td>
-                <td className="px-6 py-4">{grade.section}</td>
+            {currentStudents.map((student, index) => (
+              <tr key={student.id} className="border-b bg-white border-gray-900">
+                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">{student.student_id}</th>
+                <td className="px-6 py-4">{student.student.first_name}</td>
+                <td className="px-6 py-4">{student.subject.subject_code}</td>
+                <td className="px-6 py-4">{student.subject.title}</td>
+                <td className="px-6 py-4">{student.subject.credit_unit}</td>
+                <td className="px-6 py-4">{student.student.section.name}</td>
                 <td className="px-6 py-4">
-                  {editIndex === indexOfFirstGrade + index ? (
+                  {editMode && editIndex === student.student_id ? (
                     <input
                       type="text"
-                      name="midterm"
-                      value={grade.midterm}
-                      onChange={(e) => this.handleEditChange(e, indexOfFirstGrade + index)}
+                      name="midterm_grade"
+                      value={editedStudents[student.student_id]?.midterm_grade || student.midterm_grade}
+                      onChange={(e) => this.handleEditChange(e, student.student_id)}
                       className="p-2 border-2 border-gray-900 rounded-lg w-full bg-white"
                     />
                   ) : (
-                    grade.midterm
+                    student.midterm_grade
                   )}
                 </td>
                 <td className="px-6 py-4">
-                  {editIndex === indexOfFirstGrade + index ? (
+                  {editMode && editIndex === student.student_id ? (
                     <input
                       type="text"
-                      name="final"
-                      value={grade.final}
-                      onChange={(e) => this.handleEditChange(e, indexOfFirstGrade + index)}
+                      name="final_grade"
+                      value={editedStudents[student.student_id]?.final_grade || student.final_grade}
+                      onChange={(e) => this.handleEditChange(e, student.student_id)}
                       className="p-2 border-2 border-gray-900 rounded-lg w-full bg-white"
                     />
                   ) : (
-                    grade.final
+                    student.final_grade
                   )}
                 </td>
                 <td className="px-6 py-4">
-                  {editIndex === indexOfFirstGrade + index ? (
-                    <select
-                      name="reExam"
-                      value={grade.reExam}
-                      onChange={(e) => this.handleEditChange(e, indexOfFirstGrade + index)}
-                      className="p-2 border-2 border-gray-900 rounded-lg w-full bg-white"
-                    >
-                      <option value="None">None</option>
-                      <option value="Passed">Passed</option>
-                      <option value="Failed">Failed</option>
-                    </select>
-                  ) : (
-                    grade.reExam
-                  )}
-                </td>
-                <td className="px-6 py-4">
-                  {editIndex === indexOfFirstGrade + index ? (
+                  {editMode && editIndex === student.student_id ? (
                     <select
                       name="remarks"
-                      value={grade.remarks}
-                      onChange={(e) => this.handleEditChange(e, indexOfFirstGrade + index)}
+                      value={editedStudents[student.student_id]?.remarks || student.remarks}
+                      onChange={(e) => this.handleEditChange(e, student.student_id)}
                       className="p-2 border-2 border-gray-900 rounded-lg w-full bg-white"
                     >
-                      <option value="None">None</option>
-                      <option value="Good">Good</option>
-                      <option value="Average">Average</option>
-                      <option value="Poor">Poor</option>
+                      <option value="">Select Remark</option>
+                      <option value="Passed">Passed</option>
+                      <option value="Failed">Failed</option>
+                      <option value="Incomplete">Incomplete</option>
+                      <option value="Not Yet Posted">Not Yet Posted</option>
                     </select>
                   ) : (
-                    grade.remarks
+                    student.remarks
                   )}
                 </td>
                 <td className="px-6 py-4">
-                  {editIndex === indexOfFirstGrade + index ? (
-                    <button onClick={this.handleSaveClick} className="text-green-600 hover:text-green-800 mx-2">
+                  {editMode && editIndex === student.student_id ? (
+                    <button onClick={() => this.handleSaveClick(student.student_id)} className="text-blue-600 hover:text-blue-800 mx-2">
                       <FontAwesomeIcon icon={faSave} />
                     </button>
                   ) : (
-                    <button onClick={() => this.handleEditClick(indexOfFirstGrade + index)} className="text-blue-600 hover:text-blue-800 mx-2">
+                    <button onClick={() => this.handleEditClick(student.student_id)} className="text-blue-600 hover:text-blue-800 mx-2">
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
                   )}
@@ -216,47 +242,78 @@ class Grades extends Component {
   };
 
   render() {
+    const { subjects, sections, schoolYears, selectedSubject, selectedSection, selectedSchoolYear, searchQuery } = this.state;
+
     return (
-      <main className="relative flex flex-col items-center p-8">
-        <div className="w-full flex justify-between items-center mb-4">
-          <h1 className="text-xl font-bold text-left text-black">Grades</h1>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold mb-4">Grades Management</h1>
+
+        <div className="mb-4">
+          <label className="mr-2">Subject:</label>
           <select
-            className="form-control input-sm menu-select bg-white text-black border-2 border-gray-900"
-            value={this.state.currentSemester}
-            onChange={this.handleSemesterChange}
+            value={selectedSubject}
+            onChange={(e) => this.setState({ selectedSubject: e.target.value })}
+            className="p-2 border-2 border-gray-900 rounded-lg bg-white"
           >
-            {Object.keys(this.state.semesters).map((semester) => (
-              <option key={semester} value={semester}>
-                {semester}
-              </option>
+            <option value="">Select Subject</option>
+            {subjects.map(subject => (
+              <option key={subject.id} value={subject.id}>{subject.title}</option>
             ))}
           </select>
+
+          <label className="mr-2 ml-4">Section:</label>
+          <select
+            value={selectedSection}
+            onChange={(e) => this.setState({ selectedSection: e.target.value })}
+            className="p-2 border-2 border-gray-900 rounded-lg bg-white"
+          >
+            <option value="">Select Section</option>
+            {sections.map(section => (
+              <option key={section.id} value={section.id}>{section.name}</option>
+            ))}
+          </select>
+
+          <label className="mr-2 ml-4">School Year:</label>
+          <select
+            value={selectedSchoolYear}
+            onChange={(e) => this.setState({ selectedSchoolYear: e.target.value })}
+            className="p-2 border-2 border-gray-900 rounded-lg bg-white"
+          >
+            <option value="">Select School Year</option>
+            {schoolYears.map(schoolYear => (
+              <option key={schoolYear.id} value={schoolYear.id}>{schoolYear.name}</option>
+            ))}
+          </select>
+
+          <button
+            onClick={this.fetchStudents}
+            className="ml-4 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700"
+          >
+            Filter
+          </button>
         </div>
-        <div className="w-full flex flex-col md:flex-row justify-between items-center mb-6">
-          <div className="flex flex-col md:flex-row items-center space-x-4">
-            <input
-              type="text"
-              placeholder="Search by student name"
-              value={this.state.searchQuery} // Bind the input to searchQuery
-              onChange={this.handleSearchChange}
-              className="p-2 border-2 border-gray-900 rounded-lg mb-4 md:mb-0"
-            />
-          </div>
-          <div className="flex space-x-8">
-            <div className="p-4 bg-gray-200 border-2 border-gray-900 rounded-lg">
-              <h2 className="text-lg font-bold text-black">Total Students</h2>
-              <p className="text-xl text-black">50</p>
-            </div>
-            <div className="p-4 bg-gray-200 border-2 border-gray-900 rounded-lg">
-              <h2 className="text-lg font-bold text-black">Average Grade</h2>
-              <p className="text-xl text-black">B+</p>
-            </div>
-          </div>
+
+        <div className="mb-4">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={this.handleSearchChange}
+            placeholder="Search by student name"
+            className="p-2 border-2 border-gray-900 rounded-lg w-full"
+          />
+          <button
+            onClick={this.handleSearchClick}
+            className="ml-4 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700"
+          >
+            Search
+          </button>
         </div>
+
         {this.renderGradesTable()}
-      </main>
+      </div>
     );
   }
 }
 
 export default Grades;
+
