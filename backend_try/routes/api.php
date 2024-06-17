@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Instructor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\SchoolYearController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentSubjectController;
+use App\Http\Controllers\InstructorController;
 
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
@@ -66,5 +68,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('/students/{student_id}/subjects', [StudentSubjectController::class, 'getStudentSubjects'])->name('students.subjects');
     Route::get('/students/{student_id}/subjects_enrolled', [StudentSubjectController::class, 'getStudentScheduleTeachers'])->name('students.subjects_enrolled');
+
+    Route::get('/instructors', [InstructorController::class, 'index'])->name('instructors.index');
+    Route::post('/instructors/enroll', [InstructorController::class, 'enroll'])->name('instructors.enroll');
+    Route::get('/instructors/enrolled', [InstructorController::class, 'isEnrolled'])->name('instructors.isEnrolled');
 });
 

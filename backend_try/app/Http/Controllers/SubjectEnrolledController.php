@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\SubjectEnrolled;
 use App\Rules\Grade;
-use App\Rules\GradeRemarks;
 
 
 class SubjectEnrolledController extends Controller

@@ -14,7 +14,7 @@ const Sidebar = ({ onLogout }) => {
     const [isDropdownVisible, setDropdownVisible] = useState(false); // State to manage dropdown visibility
     const [studentName, setStudentName] = useState('');
     const [userRole, setUserRole] = useState('');
-    const {isAuthenticated} = useAuth();
+    const { isAuthenticated } = useAuth();
     console.log(isAuthenticated);
 
     useEffect(() => {
@@ -48,13 +48,12 @@ const Sidebar = ({ onLogout }) => {
 
     const toggleDropdown = () => {
         setDropdownVisible(!isDropdownVisible);
-    };
+    }; 
 
     const adminMenus = [
         { title: "Dashboard", icon: faChartLine, path: "/admin/dashboard" },
-        { title: "Profile", icon: faUser, gap: true, path: "/admin/profile" },
-        { title: "Schedule", icon: faCalendar, path: "/admin/schedules" },
-        { title: "Grades", icon: faChartPie, path: "/admin/grades" },
+        { title: "Assign Instructor", icon: faUser, gap: true, path: "/admin/instructor-assign" },
+        { title: "Assign Schedule", icon: faChartPie, path: "/admin/schedules" },
         { title: "Settings", icon: faCog, gap: true, path: "/settings" },
         { title: "", gap: true, path: "/" },
         { title: "", gap: true, path: "/" },
@@ -123,7 +122,54 @@ const Sidebar = ({ onLogout }) => {
         }
     ];
 
-    const Menus = userRole === 'admin' ? adminMenus : studentMenus;
+    const instructorMenus = [
+        { title: "Dashboard", icon: faChartLine, path: "/instructor/dashboard" },
+        { title: "Profile", icon: faUser, gap: true, path: "/instructor/profile" },
+        { title: "Pseudo-Enrollment", icon: faUserPlus, path: "/instructor/pseudo-enrollment" },
+        { title: "Schedule", icon: faCalendar, path: "/instructor/schedules" },
+        { title: "Grades", icon: faChartPie, path: "/instructor/grades" },
+        { title: "Settings", icon: faCog, gap: true, path: "/settings" },
+        { title: "", gap: true, path: "/" },
+        { title: "", gap: true, path: "/" },
+        {
+            title: (
+                <li className="relative flex items-center" onClick={toggleDropdown}>
+                    <div className='flex items-center'>
+                        <img src={admin1} className="w-9 h-9 rounded-full mb-2 mr-2" alt="StudentPic" />
+                        <a href="#" className="text-white hover:text-gray-400 flex relative">{studentName}</a>
+                    </div>
+                    {isDropdownVisible && (
+                        <ul className="absolute bottom-0 left-0 mb-16 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                            <li className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                <FontAwesomeIcon icon={faUser} className="mr-2 text-lg" />
+                                <span className="text-l font-bold">Profile</span>
+                            </li>
+                            <li className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                <FontAwesomeIcon icon={faQuestionCircle} className="mr-2 text-lg" />
+                                <span className="text-l font-bold">Help</span>
+                            </li>
+                            <li onClick={onLogout} className="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                <FontAwesomeIcon icon={faSignOutAlt} className="mr-2 text-lg" />
+                                <span className="text-l font-bold">Logout</span>
+                            </li>
+                        </ul>
+                    )}
+                </li>
+            )
+        }
+    ];
+
+    let Menus = [];
+    if (userRole === 'admin') {
+        Menus = adminMenus;
+    } else if (userRole === 'instructor') {
+        Menus = instructorMenus;
+    } else if (userRole === 'student') {
+        Menus = studentMenus;
+    } else {
+        console.log('Error, You have no Role in Life');
+        navigate('/login');
+    }
 
     return (
         <div className="flex">

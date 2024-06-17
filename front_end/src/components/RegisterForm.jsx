@@ -10,7 +10,7 @@ const RegisterForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
-  const [role, setRole] = useState('student');
+  const [role, setRole] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('')
 
@@ -42,6 +42,11 @@ const RegisterForm = () => {
 
     if (password.length < 8) {
       setErrorMessage('Password must be at least 8 characters long.');
+      return;
+    }
+
+    if (!role) {
+      setErrorMessage('You must pick a role in LIFE MYGHAD.');
       return;
     }
 
@@ -137,6 +142,8 @@ const RegisterForm = () => {
                   <label className="text-white">Student</label>
                   <input type="radio" value="admin" checked={role === 'admin'} onChange={() => setRole('admin')} className="ml-4 mr-2 text-white" />
                   <label className="text-white">Admin</label>
+                  <input type="radio" value="instructor" checked={role === 'instructor'} onChange={() => setRole('instructor')} className="ml-4 mr-2 text-white" />
+                  <label className="text-white">Instructor</label> 
               </div>
             </div>
             <button

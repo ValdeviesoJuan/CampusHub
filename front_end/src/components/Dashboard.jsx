@@ -69,13 +69,13 @@ class Dashboard extends Component {
         </div>
 
         <div className="boxes flex space-x-24 relative -top-[1%] -left-[10%] mx-auto">
-          <Link to="/Profile" className="bg-custom-image2 box flex items-center justify-center shadow-md w-[280px] h-[180px] bg-slate-800 bg-no-repeat cursor-pointer rounded-[15px] transition ease duration-300 hover:bg-[rgb(51,65,85)]">
+          <Link to="/student/profile" className="bg-custom-image2 box flex items-center justify-center shadow-md w-[280px] h-[180px] bg-slate-800 bg-no-repeat cursor-pointer rounded-[15px] transition ease duration-300 hover:bg-[rgb(51,65,85)]">
             <FontAwesomeIcon icon={faAddressCard} className="text-white text-[100px]" />
           </Link>
-          <Link to="/Schedule_student" className="bg-custom-image3 box flex items-center justify-center shadow-md w-[280px] h-[180px] bg-slate-800 cursor-pointer rounded-[15px] transition ease duration-300 hover:bg-[rgb(51,65,85)]">
+          <Link to="/student/schedules" className="bg-custom-image3 box flex items-center justify-center shadow-md w-[280px] h-[180px] bg-slate-800 cursor-pointer rounded-[15px] transition ease duration-300 hover:bg-[rgb(51,65,85)]">
             <FontAwesomeIcon icon={faCalendarDays} className="text-white text-[100px]" />
           </Link> 
-          <Link to="/Grades_student" className="bg-custom-image4 box flex items-center justify-center shadow-md w-[280px] h-[180px] bg-slate-800 cursor-pointer rounded-[15px] transition ease duration-300 hover:bg-[rgb(51,65,85)]">
+          <Link to="/student/grades" className="bg-custom-image4 box flex items-center justify-center shadow-md w-[280px] h-[180px] bg-slate-800 cursor-pointer rounded-[15px] transition ease duration-300 hover:bg-[rgb(51,65,85)]">
             <FontAwesomeIcon icon={faChartColumn} className="text-white text-[100px]" />
           </Link>
         </div>

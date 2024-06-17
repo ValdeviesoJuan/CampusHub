@@ -14,7 +14,6 @@ const LoginForm = () => {
     const [isPasswordFocused, setIsPasswordFocused] = useState(false);
     const navigate = useNavigate();
     const { handleLogin } = useAuth();
-    const location = useLocation();
 
     useEffect(() => {
         async function fetchCsrfToken() {
@@ -60,6 +59,8 @@ const LoginForm = () => {
             navigate('/admin/dashboard');
           } else if (userData.role === 'student') {
             navigate('/student/dashboard');
+          } else if (userData.role === 'instructor') {
+            navigate('/instructor/dashboard');
           } else {
             navigate('/login');
           }
