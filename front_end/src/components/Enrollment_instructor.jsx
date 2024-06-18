@@ -24,8 +24,8 @@ const EnrollmentInstructor = () => {
             setLoading(false);
 
         } catch (error) {
-            console.error('Error fetching instructor enrollment status:', error);
-            alert('Error instructor enrollment status. Please check console for details.');
+            console.error('Error fetching instructor registration status:', error);
+            alert('Error instructor registration status. Please check console for details.');
 
         } finally {
             setLoading(false);
@@ -78,7 +78,7 @@ const EnrollmentInstructor = () => {
                 <FontAwesomeIcon icon={faExclamationCircle} className="h-6 w-6 text-yellow-500 mr-3" />
                 <div>
                     <p className="font-bold">Instructor Enrollment Status</p>
-                    <p>You are already enrolled and cannot enroll again.</p>
+                    <p>You are already registered and cannot register again.</p>
                 </div>
             </div>
         </div>
@@ -89,7 +89,7 @@ const EnrollmentInstructor = () => {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-md" role="alert">
-          <p>You've successfully enrolled, you can proceed to assign student grades and see your schedules.</p>
+          <p>You've successfully registered, you can proceed to assign student grades and see your schedules.</p>
         </div>
       </div>
     );
