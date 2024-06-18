@@ -15,11 +15,16 @@ class SectionSeeder extends Seeder
     public function run(): void
     {
         DB::table('sections')->insert([
-            ['name' => 'IT1R1', 'year_level_id' => 1, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['name' => 'IT1R2', 'year_level_id' => 1, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['name' => 'IT1R3', 'year_level_id' => 1, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['name' => 'IT1R4', 'year_level_id' => 1, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
-            ['name' => 'IT1R5', 'year_level_id' => 1, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            // ['name' => 'IT1R1', 'year_level_id' => 1, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            // ['name' => 'IT1R2', 'year_level_id' => 1, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            // ['name' => 'IT1R3', 'year_level_id' => 1, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            // ['name' => 'IT1R4', 'year_level_id' => 1, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            // ['name' => 'IT1R5', 'year_level_id' => 1, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['name' => 'IT2R1', 'year_level_id' => 2, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['name' => 'IT2R2', 'year_level_id' => 2, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['name' => 'IT2R3', 'year_level_id' => 2, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['name' => 'IT2R4', 'year_level_id' => 2, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['name' => 'IT2R5', 'year_level_id' => 2, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
         ]);
     }
 }
