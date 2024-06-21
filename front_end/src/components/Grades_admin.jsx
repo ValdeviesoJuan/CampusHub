@@ -26,6 +26,7 @@ class Grades extends Component {
 
   componentDidMount() {
     this.fetchDropdownData();
+    this.fetchStudents();
   }
 
   fetchDropdownData = () => {
@@ -35,15 +36,18 @@ class Grades extends Component {
   };
 
   fetchStudents = () => {
-    const { selectedSubject, selectedSection, selectedSchoolYear } = this.state;
-    axiosInstance.get('/api/students-by-instructor', {
-      params: {
-        subject_id: selectedSubject,
-        section_id: selectedSection,
-        school_year_id: selectedSchoolYear,
-      }
-    }).then(response => {
-      this.setState({ students: response.data, subjectIdForUpdate: selectedSubject });
+    axiosInstance.get('/api/students-by-instructor').then(response => {
+      const students = response.data.map(student => ({
+        student_id: student.id,
+        student_name: `${student.student.first_name} ${student.student.last_name}`,
+        subject_code: student.subject.subject_code,
+        title: student.subject.title,
+        section_name: student.student.section.name,
+        midterm_grade: student.midterm_grade,
+        final_grade: student.final_grade,
+        remarks: student.remarks,
+      }));
+      this.setState({ students });
     });
   };
 
@@ -70,10 +74,8 @@ class Grades extends Component {
     // Send edited data to server using Axios (assuming endpoint /api/update-grade)
     axiosInstance.put(`/api/update-grade/${studentId}/${subjectIdForUpdate}`, editedStudent)
       .then(response => {
-        // Update state with response if needed
         console.log('Grade updated successfully:', response.data);
 
-        // Update students state to reflect the updated data
         const updatedStudents = this.state.students.map(student => {
           if (student.student_id === studentId) {
             return {
@@ -86,20 +88,18 @@ class Grades extends Component {
           return student;
         });
 
-        // Clear edit state
         this.setState({
           editIndex: -1,
           editMode: false,
           editedStudents: {
             ...editedStudents,
-            [studentId]: undefined, // Clear edited student data after saving
+            [studentId]: undefined,
           },
           students: updatedStudents
         });
       })
       .catch(error => {
         console.error('Error updating grade:', error);
-        // Handle error if needed
       });
   };
 
@@ -138,7 +138,7 @@ class Grades extends Component {
 
     if (searchQuery) {
       filteredStudents = filteredStudents.filter((student) =>
-        student.student.first_name.toLowerCase().includes(searchQuery.toLowerCase())
+        student.student_name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -170,13 +170,13 @@ class Grades extends Component {
           </thead>
           <tbody>
             {currentStudents.map((student, index) => (
-              <tr key={student.id} className="border-b bg-white border-gray-900">
+              <tr key={student.student_id} className="border-b bg-white border-gray-900">
                 <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-black">{student.student_id}</th>
-                <td className="px-6 py-4">{student.student.first_name}</td>
-                <td className="px-6 py-4">{student.subject.subject_code}</td>
-                <td className="px-6 py-4">{student.subject.title}</td>
-                <td className="px-6 py-4">{student.subject.credit_unit}</td>
-                <td className="px-6 py-4">{student.student.section.name}</td>
+                <td className="px-6 py-4">{student.student_name}</td>
+                <td className="px-6 py-4">{student.subject_code}</td>
+                <td className="px-6 py-4">{student.title}</td>
+                <td className="px-6 py-4">{student.units}</td>
+                <td className="px-6 py-4">{student.section_name}</td>
                 <td className="px-6 py-4">
                   {editMode && editIndex === student.student_id ? (
                     <input
@@ -316,4 +316,3 @@ class Grades extends Component {
 }
 
 export default Grades;
-

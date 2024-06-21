@@ -59,33 +59,19 @@ class StudentSubjectController extends Controller
         }
     }
 
-    public function getStudentsByInstructor(Request $request)
+    public function getStudentsByInstructor()
     {
-        $request->validate([
-            'subject_id' => 'required|exists:subjects,id',
-            'section_id' => 'required|exists:sections,id',
-            'school_year_id' => 'required|exists:school_years,id',
-        ]);
-
         $user = auth()->user();
         $instructor = Instructor::where('user_id', $user->id)->first();
-
-        if (!$instructor) {
-            return response()->json(['error' => 'Instructor not found'], 404);
-        }
-
         $instructorId = $instructor->id;
-        
+
         $students = SubjectEnrolled::where('instructor_id', $instructorId)
-            ->where('subject_id', $request->subject_id)
-            ->whereHas('student', function ($query) use ($request) {
-                $query->where('section_id', $request->section_id)
-                      ->where('school_year_id', $request->school_year_id);
-            })
-            ->with('student')
-            ->with('student.section')
-            ->with('subject')
-            ->get();
+        ->with(['student' => function ($query) {
+            $query->select('id', 'first_name', 'last_name', 'section_id')
+                  ->with('section:id,name'); // Eager load the section relationship
+        }])
+        ->with('subject:id,subject_code,title') // Eager load subject relationship with required fields
+        ->get();
 
         return response()->json($students);
     }
