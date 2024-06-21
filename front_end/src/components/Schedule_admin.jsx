@@ -8,7 +8,6 @@ const Schedule = () => {
   const [editEventId, setEditEventId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [sections, setSections] = useState([]);
-  const [subjects, setSubjects] = useState([]);
   const [selectedSection, setSelectedSection] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [newSchedule, setNewSchedule] = useState({
@@ -25,9 +24,14 @@ const Schedule = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await axiosInstance.get('/api/admin/section-schedules');
-      setEvents(response.data);
-      console.log(response.data);
+      const [eventsRes, sectionsRes] = await Promise.all([
+        axiosInstance.get('/api/admin/section-schedules'),
+        axiosInstance.get('/api/sections') // Assuming this endpoint returns all sections
+      ]);
+      setEvents(eventsRes.data);
+      setSections(sectionsRes.data);
+      console.log(eventsRes.data);
+      console.log(sectionsRes.data);
     } catch (error) {
       console.error('Error fetching events:', error);
     }
@@ -57,6 +61,11 @@ const Schedule = () => {
       console.error('Error saving schedule:', error);
     }
   };
+
+  const filteredEvents = events.filter(event =>
+    (selectedSection === "" || event.section_name === selectedSection) &&
+    (searchTerm === "" || event.title.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   return (
     <div className="flex">
@@ -99,7 +108,7 @@ const Schedule = () => {
                     >
                       <option value="">All Sections</option>
                       {sections.map(section => (
-                        <option key={section} value={section}>{section}</option>
+                        <option key={section.id} value={section.name}>{section.name}</option>
                       ))}
                     </select>
                   </div>
@@ -125,10 +134,7 @@ const Schedule = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {events.filter(event =>
-                      (selectedSection === "" || event.section_name === selectedSection) &&
-                      (searchTerm === "" || event.title.toLowerCase().includes(searchTerm.toLowerCase()))
-                    ).map(event => (
+                    {filteredEvents.map(event => (
                       <tr key={event.id} className="bg-white border-b text-black">
                         <td className="px-6 py-4">{event.section_name}</td>
                         <td className="px-6 py-4">{event.subject_code}</td>

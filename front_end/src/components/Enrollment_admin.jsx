@@ -8,6 +8,7 @@ const EnrollmentAdmin = () => {
   const [subjects, setSubjects] = useState([]);
   const [instructors, setInstructors] = useState([]);
   const [sections, setSections] = useState([]);
+  const [filteredSections, setFilteredSections] = useState([]);
   const [schoolYears, setSchoolYears] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
@@ -45,10 +46,22 @@ const EnrollmentAdmin = () => {
   });
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value
+    }));
+
+    if (name === 'subject_id') {
+      const selectedSubject = subjects.find(subject => subject.id === parseInt(value));
+      if (selectedSubject) {
+        const filtered = sections.filter(section => section.year_level_id === selectedSubject.year_level_id);
+        setFilteredSections(filtered);
+      } else {
+        setFilteredSections([]);
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -146,7 +159,7 @@ const EnrollmentAdmin = () => {
                     required
                   >
                     <option value="">Select Section</option>
-                    {sections.map(section => (
+                    {filteredSections.map(section => (
                       <option key={section.id} value={section.id}>{section.name}</option>
                     ))}
                   </select>
