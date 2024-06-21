@@ -59,7 +59,7 @@ const EnrollmentInstructor = () => {
     
     try {
       await axiosInstance.post('/api/instructors/enroll', formData);
-      alert('Instructor enrollment completed successfully');
+      alert('Instructor registration completed successfully');
       setEnrollmentSuccess(true);
     } catch (error) {
       console.error('Error enrolling instructor:', error);
@@ -77,7 +77,7 @@ const EnrollmentInstructor = () => {
             <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg shadow-md flex items-center" role="alert" style={{ maxWidth: '30rem' }}>
                 <FontAwesomeIcon icon={faExclamationCircle} className="h-6 w-6 text-yellow-500 mr-3" />
                 <div>
-                    <p className="font-bold">Instructor Enrollment Status</p>
+                    <p className="font-bold">Instructor Registration Status</p>
                     <p>You are already registered and cannot register again.</p>
                 </div>
             </div>

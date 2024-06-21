@@ -124,8 +124,7 @@ const Sidebar = ({ onLogout }) => {
     ];
 
     const instructorMenus = [
-        { title: "Dashboard", icon: faChartLine, path: "/instructor/dashboard" },
-        { title: "Profile", icon: faUser, gap: true, path: "/instructor/profile" },
+        { title: "Dashboard", icon: faChartLine, gap: true, path: "/instructor/dashboard" },
         { title: "Pseudo-Enrollment", icon: faUserPlus, path: "/instructor/pseudo-enrollment" },
         { title: "Schedule", icon: faCalendar, path: "/instructor/schedules" },
         { title: "Grades", icon: faChartPie, path: "/instructor/grades" },
