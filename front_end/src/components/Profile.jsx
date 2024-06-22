@@ -65,7 +65,7 @@ class Profile extends Component {
   };
 
   // Function to handle file selection
-  handleFileChange = (event) => {
+  handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -75,38 +75,30 @@ class Profile extends Component {
           imagePreview: reader.result, // Base64 string for preview
         });
       };
-      reader.readAsDataURL(file);
-    }
-  };
 
-  // Function to handle image upload
-  handleImageUpload = async () => {
-    const { file, studentId } = this.state;
-    if (!file) {
-      alert('Please select an image first.');
-      return;
-    }
-
-    try {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('studentId', studentId);
+      formData.append('studentId', this.state.studentId);
 
-      const response = await axiosInstance.post('/api/students/upload-profile-pic', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      try {
+        const response = await axiosInstance.post('/api/students/upload-profile-pic', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+  
+        console.log('Image uploaded successfully:', response.data);
+        alert('Profile picture updated successfully.');
+  
+        this.fetchStudentInformation(studentId);
+        this.setState({ file: null, imagePreview: null });
 
-      console.log('Image uploaded successfully:', response.data);
-      alert('Profile picture updated successfully.');
-
-      this.fetchStudentInformation(studentId);
-      this.setState({ file: null, imagePreview: null });
-
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      alert('Error uploading image. Please check console for details.');
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        alert('Error uploading image. Please check console for details.');
+      }
+  
+      reader.readAsDataURL(file);
     }
   };
 
@@ -117,16 +109,23 @@ class Profile extends Component {
       return <BlackLoadingSpinner />;
     }
 
+    let profileImage = null;
+    if (studentData.profile_image) {
+      const decodedFileName = atob(studentData.profile_image); // Decode base64 string
+      profileImage = `../src/assets/img/${decodedFileName}`;
+      console.log(profileImage);
+    }
+
     return (
       <div className="flex flex-col bg-white bg-custom-image bg-cover bg-center h-full max-h-screen relative overflow-hidden">
         <div className="bg-slate-800 h-[200px] w-[295px] rounded-md relative top-[10%] left-[5%] shadow-2xl">
           {imagePreview ? (
             <img src={imagePreview} alt="Student" className="absolute top-[-25%] left-[3%] border-4 border-slate-800 rounded-full h-[140px] w-[140px]" />
           ) : (
-            <img
-              src={studentData.profile_image ? `data:image/jpeg;base64,${studentData.profile_image}` : '../defa.jpg'}
+            <img  
+              src={studentData.profile_image ? profileImage : '../defa.jpg'}
               alt="Student"
-              className="absolute top-[-25%] left-[3%] border-4 border-slate-800 rounded-full h-[140px]"
+              className="absolute top-[-25%] left-[3%] border-4 border-slate-800 rounded-full h-[140px] w-[140px]"
             />
           )}
           <label htmlFor="fileUpload" className="absolute left-[39%] top-[30%] bg-transparent border-none outline-none p-0 m-0">
@@ -139,14 +138,9 @@ class Profile extends Component {
             style={{ display: 'none' }}
             onChange={this.handleFileChange}
           />
-          <button
-            onClick={this.handleImageUpload}
-            className="absolute left-[39%] top-[50%] bg-transparent border-none outline-none p-0 m-0"
-          >
-           
-          </button>
+
           <p className="text-white text-xl absolute left-[5%] top-[50%]">
-            Student Name: {studentData.full_name}
+            {studentData.full_name}
           </p>
           <p className="text-white text-lg absolute left-[5%] top-[80%]">
             Student ID: {studentData.student_id}
@@ -168,7 +162,6 @@ class Profile extends Component {
           <p className="bg-slate-100 pb-24 pl-2 rounded-b-lg w-[300px] text-slate-900 text-xl absolute top-[58%]">
             Department: {studentData.department}
           </p>
-          <br />
         </div>
 
         <div className="rounded-md w-[50%] h-[20%] relative top-[-25%] left-[30%] justify-center">

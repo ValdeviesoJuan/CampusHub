@@ -179,9 +179,15 @@ class StudentController extends Controller
         try {
             $student = Student::findOrFail($request->studentId);
             $file = $request->file('file');
-            $imageData = file_get_contents($file->getRealPath());
+            $userName = $student->first_name; // Assuming you have user authentication
+            $imageFileType = strtolower($file->getClientOriginalExtension());
+            $fileName = $userName . '_dp.' . $imageFileType;
+            $targetDir = '../../front_end/src/assets/img/';
+            $targetFile = $targetDir . $fileName;
+            
+            $file->move($targetDir, $fileName);
 
-            $student->update(['profile_image' => $imageData]);
+            $student->update(['profile_image' => $fileName]);
 
             return response()->json(['message' => 'Profile picture updated successfully']);
         } catch (\Exception $e) {

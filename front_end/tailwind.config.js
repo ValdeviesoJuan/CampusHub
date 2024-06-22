@@ -15,7 +15,6 @@ export default {
       },
       backgroundImage: {
         'custom-image': "url('stripes.png')",
-        'custom-image2': "url('')",
         'footer-gradient': 'linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%)'
       },
     },
