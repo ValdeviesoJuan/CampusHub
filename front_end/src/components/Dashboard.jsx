@@ -62,7 +62,7 @@ class Dashboard extends Component {
         <div className='bg-slate-100 h-[880px] w-[350px] absolute left-[43%] top-[-10%] -rotate-12 shadow-right-custom-rotated'></div>
 
         <div className="banner mb-6 text-center bg-[rgb(30,41,59)] h-[199px] w-[700px] relative -top-[85px] left-[-21.6%] rounded-[12px] shadow-2xl">
-          <img src="../shoyo.jpg" alt="Student" className="mx-auto mb-4 absolute h-[130px] left-[5%] top-[8%] rounded-full border-2 border-slate-200" />
+          <img src="../defa.jpg" alt="Student" className="mx-auto mb-4 absolute h-[130px] left-[5%] top-[8%] rounded-full border-2 border-slate-200" />
           <img src="../stripes.png" className="absolute h-[199px] left-[49.5%] rounded-r-lg" alt="Stripes" />
           <label className="text-white italic text-3xl block absolute top-[8%] left-[70%] text-[28px]">CAMPUSHUB</label>
           <p className="text-white text-xl absolute top-[79%] left-[4%] text-[27px]">Welcome, {studentName}</p>

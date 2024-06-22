@@ -22,6 +22,7 @@ class Student extends Model
         'semester_id',
         'section_id',
         'school_year_id',
+        'profile_image',
     ];
 
     public function user()

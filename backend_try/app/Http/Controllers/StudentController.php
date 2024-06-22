@@ -123,6 +123,8 @@ class StudentController extends Controller
             $today = new \DateTime('today');
             $age = $birthdate->diff($today)->y;
 
+            $profileImage = $student->profile_image ? base64_encode($student->profile_image) : null;
+
             // Construct the data to return
             $studentData = [
                 'student_id' => $student->id,
@@ -134,6 +136,7 @@ class StudentController extends Controller
                 'section_name' => $student->section->name,
                 'course' => $student->program->abbv,
                 'department' => $student->program->department->department_name,
+                'profile_image' => $profileImage,
             ];
 
             return response()->json(['studentInfo' => $studentData]);
@@ -165,6 +168,27 @@ class StudentController extends Controller
         $student->update($validatedData);
         return response()->json($student);
     }
+
+    public function uploadProfilePic(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|image|max:10240',
+            'studentId' => 'required|exists:students,id',
+        ]);
+
+        try {
+            $student = Student::findOrFail($request->studentId);
+            $file = $request->file('file');
+            $imageData = file_get_contents($file->getRealPath());
+
+            $student->update(['profile_image' => $imageData]);
+
+            return response()->json(['message' => 'Profile picture updated successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error uploading image: ' . $e->getMessage()], 500);
+        }
+    }
+
 
     public function destroy($id)
     {

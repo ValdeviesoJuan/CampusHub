@@ -18,6 +18,7 @@ class Profile extends Component {
         section_name: '',
         course: '',
         department: '',
+        profile_image: '',
       },
       loading: true,
       error: null,
@@ -42,7 +43,6 @@ class Profile extends Component {
       } else {
         alert('You are not enrolled as a student.');
         this.setState({ loading: false });
-        // Handle redirect or display message for non-enrolled user
       }
     } catch (error) {
       console.error('Error checking enrollment:', error);
@@ -90,7 +90,7 @@ class Profile extends Component {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('studentId', studentId); // Assuming you need to send studentId to associate image
+      formData.append('studentId', studentId);
 
       const response = await axiosInstance.post('/api/students/upload-profile-pic', formData, {
         headers: {
@@ -98,11 +98,9 @@ class Profile extends Component {
         },
       });
 
-      // Handle success response
       console.log('Image uploaded successfully:', response.data);
       alert('Profile picture updated successfully.');
 
-      // Update state and refresh profile information
       this.fetchStudentInformation(studentId);
       this.setState({ file: null, imagePreview: null });
 
@@ -123,9 +121,13 @@ class Profile extends Component {
       <div className="flex flex-col bg-white bg-custom-image bg-cover bg-center h-full max-h-screen relative overflow-hidden">
         <div className="bg-slate-800 h-[200px] w-[295px] rounded-md relative top-[10%] left-[5%] shadow-2xl">
           {imagePreview ? (
-            <img src={imagePreview} alt="Student" className="absolute top-[-25%] left-[3%] border-4 border-slate-800 rounded-full h-[140px]" />
+            <img src={imagePreview} alt="Student" className="absolute top-[-25%] left-[3%] border-4 border-slate-800 rounded-full h-[140px] w-[140px]" />
           ) : (
-            <img src="../shoyo.jpg" alt="Student" className="absolute top-[-25%] left-[3%] border-4 border-slate-800 rounded-full h-[140px]" />
+            <img
+              src={studentData.profile_image ? `data:image/jpeg;base64,${studentData.profile_image}` : '../defa.jpg'}
+              alt="Student"
+              className="absolute top-[-25%] left-[3%] border-4 border-slate-800 rounded-full h-[140px]"
+            />
           )}
           <label htmlFor="fileUpload" className="absolute left-[39%] top-[30%] bg-transparent border-none outline-none p-0 m-0">
             <FontAwesomeIcon icon={faSquarePen} className="text-white text-[28px]" style={{ width: '25px', height: '25px' }} />
@@ -139,14 +141,9 @@ class Profile extends Component {
           />
           <button
             onClick={this.handleImageUpload}
-            className="absolute left-[39%] top-[30%] bg-transparent border-none outline-none p-0 m-0"
+            className="absolute left-[39%] top-[50%] bg-transparent border-none outline-none p-0 m-0"
           >
-            {/* Icon for upload button */}
-            <FontAwesomeIcon
-              icon={faSquarePen}
-              className="text-white text-[28px]"
-              style={{ width: '25px', height: '25px' }}
-            />
+           
           </button>
           <p className="text-white text-xl absolute left-[5%] top-[50%]">
             Student Name: {studentData.full_name}

@@ -68,6 +68,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/students/{id}', [StudentController::class, 'show'])->name('students.show');
     Route::put('/students/{id}', [StudentController::class, 'update'])->name('students.update');
     Route::delete('/students/{id}', [StudentController::class, 'destroy'])->name('students.destroy');
+    Route::post('/students/upload-profile-pic', [StudentController::class, 'uploadProfilePic']);
 
     Route::get('/students/{student_id}/subjects', [StudentSubjectController::class, 'getStudentSubjects'])->name('students.subjects');
     Route::get('/students/{student_id}/subjects_enrolled', [StudentSubjectController::class, 'getStudentScheduleTeachers'])->name('students.subjects_enrolled');

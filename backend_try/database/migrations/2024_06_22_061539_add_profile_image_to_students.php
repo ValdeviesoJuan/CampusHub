@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('students', function (Blueprint $table) {
-            $table->string('profile_image')->nullable();
+            $table->string('profile_image')->nullable(); // Change from string to binary
         });
     }
 
