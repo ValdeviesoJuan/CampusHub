@@ -165,10 +165,6 @@ const RegisterForm = () => {
                 Student
               </label>
               <label className="flex items-center">
-                <input type="radio" value="admin" checked={role === 'admin'} onChange={() => setRole('admin')} className="mr-2" />
-                Admin
-              </label>
-              <label className="flex items-center">
                 <input type="radio" value="instructor" checked={role === 'instructor'} onChange={() => setRole('instructor')} className="mr-2" />
                 Instructor
               </label>

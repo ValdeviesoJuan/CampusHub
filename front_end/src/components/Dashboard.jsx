@@ -8,7 +8,19 @@ class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      studentId: null,
+      studentData: {
+        student_id: '',
+        full_name: '',
+        birthdate: '',
+        age: '',
+        phone_number: '',
+        email: '',
+        section_name: '',
+        course: '',
+        department: '',
+        profile_image: '',
+      },
+      studentId: '',
       isEnrolled: false,
       studentName: '', 
     };
@@ -38,10 +50,12 @@ class Dashboard extends Component {
 
   fetchStudentName = async (studentId) => {
     try {
-      const response = await axiosInstance.get(`/api/students/${studentId}/subjects`);
-      const studentName = response.data.studentName;
-      this.setState({ studentName: studentName });
-      localStorage.setItem('studentName', studentName);
+      const response = await axiosInstance.get(`/api/students/${studentId}`);
+      this.setState({
+        studentData: response.data.studentInfo,
+        studentName: this.state.full_name,
+      });
+      localStorage.setItem('studentName', this.state.full_name);
     } catch (error) {
       console.error('Error fetching StudentName:', error);
       alert('Error fetching student name. Please check console for details.');
@@ -49,7 +63,20 @@ class Dashboard extends Component {
   };
   
   render() {
-    const { studentName } = this.state;
+    const { studentData } = this.state;
+
+    let profileImage = null;
+    if (studentData.profile_image) {
+      const decodedFileName = atob(studentData.profile_image); // Decode base64 string
+      profileImage = `../src/assets/img/${decodedFileName}`;
+      localStorage.setItem('profileImage', profileImage);
+    }
+
+    let studentName = null;
+    if (studentData.full_name) {
+      studentName = studentData.full_name;
+      localStorage.setItem('studentName', studentName);
+    }
 
     return (
         <div className="flex flex-col justify-center items-center p-10 h-full max-h-screen bg-slate-100 relative overflow-hidden">
@@ -62,10 +89,10 @@ class Dashboard extends Component {
         <div className='bg-slate-100 h-[880px] w-[350px] absolute left-[43%] top-[-10%] -rotate-12 shadow-right-custom-rotated'></div>
 
         <div className="banner mb-6 text-center bg-[rgb(30,41,59)] h-[199px] w-[700px] relative -top-[85px] left-[-21.6%] rounded-[12px] shadow-2xl">
-          <img src="../defa.jpg" alt="Student" className="mx-auto mb-4 absolute h-[130px] left-[5%] top-[8%] rounded-full border-2 border-slate-200" />
+          <img src={studentData.profile_image ? profileImage : '../defa.jpg'} alt="Student" className="mx-auto mb-4 absolute h-[130px] left-[5%] top-[8%] rounded-full border-2 border-slate-200 h-[140px] w-[140px]" />
           <img src="../stripes.png" className="absolute h-[199px] left-[49.5%] rounded-r-lg" alt="Stripes" />
           <label className="text-white italic text-3xl block absolute top-[8%] left-[70%] text-[28px]">CAMPUSHUB</label>
-          <p className="text-white text-xl absolute top-[79%] left-[4%] text-[27px]">Welcome, {studentName}</p>
+          <p className="text-white text-xl absolute top-[79%] left-[4%] text-[27px]">Welcome, {studentData.full_name}</p>
         </div>
 
         <div className="boxes flex space-x-24 relative -top-[1%] -left-[10%] mx-auto">

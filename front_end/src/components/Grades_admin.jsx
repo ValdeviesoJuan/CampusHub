@@ -20,7 +20,7 @@ class Grades extends Component {
       gradesPerPage: 5,
       searchQuery: '',
       editedStudents: {}, // Store edited student data
-      subjectIdForUpdate: null
+      selectedSubjectId: null // Track selected subject ID
     };
   }
 
@@ -36,7 +36,14 @@ class Grades extends Component {
   };
 
   fetchStudents = () => {
-    axiosInstance.get('/api/students-by-instructor').then(response => {
+    const { selectedSubject, selectedSection, selectedSchoolYear } = this.state;
+    axiosInstance.get('/api/students-by-instructor', {
+      params: {
+        subject_id: selectedSubject,
+        section_id: selectedSection,
+        school_year_id: selectedSchoolYear,
+      }
+    }).then(response => {
       const students = response.data.map(student => ({
         student_id: student.id,
         student_name: `${student.student.first_name} ${student.student.last_name}`,
@@ -46,6 +53,8 @@ class Grades extends Component {
         midterm_grade: student.midterm_grade,
         final_grade: student.final_grade,
         remarks: student.remarks,
+        subject_id: student.subject.id,
+        subject_enrolled_id: student.id,
       }));
       this.setState({ students });
     });
@@ -63,16 +72,16 @@ class Grades extends Component {
     });
   };
 
-  handleEditClick = (studentId) => {
-    this.setState({ editIndex: studentId, editMode: true });
+  handleEditClick = (studentId, subjectEnrolledId) => {
+    this.setState({ editIndex: studentId, editMode: true, selectedSubjectId: subjectEnrolledId });
   };
 
   handleSaveClick = (studentId) => {
-    const { editedStudents, subjectIdForUpdate } = this.state;
+    const { editedStudents, selectedSubjectId } = this.state;
     const editedStudent = editedStudents[studentId];
 
     // Send edited data to server using Axios (assuming endpoint /api/update-grade)
-    axiosInstance.put(`/api/update-grade/${studentId}/${subjectIdForUpdate}`, editedStudent)
+    axiosInstance.put(`/api/update-grade/${selectedSubjectId}`, editedStudent)
       .then(response => {
         console.log('Grade updated successfully:', response.data);
 
@@ -227,7 +236,7 @@ class Grades extends Component {
                       <FontAwesomeIcon icon={faSave} />
                     </button>
                   ) : (
-                    <button onClick={() => this.handleEditClick(student.student_id)} className="text-blue-600 hover:text-blue-800 mx-2">
+                    <button onClick={() => this.handleEditClick(student.student_id, student.subject_enrolled_id)} className="text-blue-600 hover:text-blue-800 mx-2">
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
                   )}

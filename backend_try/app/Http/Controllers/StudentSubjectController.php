@@ -70,7 +70,7 @@ class StudentSubjectController extends Controller
             $query->select('id', 'first_name', 'last_name', 'section_id')
                   ->with('section:id,name'); // Eager load the section relationship
         }])
-        ->with('subject:id,subject_code,title') // Eager load subject relationship with required fields
+        ->with('subject:id,subject_code,title,credit_unit') // Eager load subject relationship with required fields
         ->get();
 
         return response()->json($students);

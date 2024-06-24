@@ -157,7 +157,6 @@ const LoginForm = () => {
           </button>
         </form>
         <div className="mt-4 text-center">
-          <a href="#" className="text-blue-100 text-sm">Forgot password?</a>
         </div>
         <div className="mt-3 text-center text-white text-sm">
           Don't have an account? <a href="/register" className="text-blue-400">Register here</a>

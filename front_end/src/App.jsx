@@ -29,11 +29,6 @@ function App() {
   const navigate = useNavigate();
   console.log(isAuthenticated);
 
-  const handleLogoutAndNavigate = async () => {
-    await handleLogout();
-    navigate('/login');
-  };
-
   const getDashboardRoute = (role) => {
     switch (role) {
       case 'admin':
@@ -51,13 +46,12 @@ function App() {
     <div className="flex flex-col h-screen w-screen bg-slate-100">
       {isAuthenticated && <Header />}
       <div className="flex flex-1">
-        {isAuthenticated && <Sidebar onLogout={handleLogoutAndNavigate} />}
+        {isAuthenticated && <Sidebar onLogout={handleLogout} />}
         <div className="flex flex-col flex-1 bg-slate-100">
           <Routes>
             <Route path="/" element={<Navigate to={isAuthenticated ? getDashboardRoute(userRole) : "/login"} />} />
-            <Route path="/login" element={<LoginForm />} />
-            <Route path="/login" element={<LoginForm />} />
-            <Route path="/register" element={<RegisterForm />} />
+            <Route path="/login" element={isAuthenticated ? <Navigate to={getDashboardRoute(userRole)} /> : <LoginForm />} />
+            <Route path="/register" element={isAuthenticated ? <Navigate to={getDashboardRoute(userRole)} /> : <RegisterForm />} />
             <Route path="/admin/dashboard" element={isAuthenticated && userRole === 'admin' ? <Dashboard_admin /> : <Navigate to="/login" />} />
             <Route path="/admin/instructor-assign" element={isAuthenticated && userRole === 'admin' ? <EnrollmentAdmin /> : <Navigate to="/login" />} />
             <Route path="/admin/schedules" element={isAuthenticated && userRole === 'admin' ? <Schedule_admin /> : <Navigate to="/login" />} />

@@ -64,19 +64,9 @@ class Grades extends Component {
       <main className="relative flex flex-col items-center p-8">
         <div className="w-full flex justify-between items-center mb-4">
           <h1 className="text-xl font-bold text-left text-black">Grades</h1>
-          <select className="form-control input-sm menu-select bg-white text-black border-2 border-gray-900">
-            <option value="Year1">2023-2024 2nd Semester</option>
-            <option value="Year2">2023-2024 1st Semester</option>
-            <option value="Year3">2022-2023 2nd Semester</option>
-            <option value="Year4">2022-2023 1st Semester</option>
-          </select>
         </div>
         <div className="w-full flex justify-between items-center mb-6">
           <button onClick={this.handlePrint} className="p-2 bg-white border-black text-black rounded-lg">Print Grades</button>
-          <div className="p-4 bg-gray-200 border-2 border-gray-900 rounded-lg">
-            <h2 className="text-lg font-bold text-black">Average Grade <br></br> B+</h2>
-            <p className="text-xl text-black"></p>
-          </div>
         </div>
         <div className="shadow-md sm:rounded-lg w-full">
           <table className="w-full text-sm text-left text-black border-4 border-gray-900">

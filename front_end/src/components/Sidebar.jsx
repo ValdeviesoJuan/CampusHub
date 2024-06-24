@@ -14,20 +14,26 @@ const Sidebar = ({ onLogout }) => {
     const [isDropdownVisible, setDropdownVisible] = useState(false); // State to manage dropdown visibility
     const [studentName, setStudentName] = useState('');
     const [userRole, setUserRole] = useState('');
+    const [profileImage, setProfileImage] = useState('');
     const { isAuthenticated } = useAuth();
     console.log(isAuthenticated);
 
     useEffect(() => {
-        const storedStudentName = localStorage.getItem('studentName');
-        console.log(storedStudentName);
-        const storedUserRole = localStorage.getItem('userRole');
-        console.log(storedUserRole);
-        if (storedStudentName) {
-            setStudentName(storedStudentName);
-        }
-        if (storedUserRole) {
-            setUserRole(storedUserRole);
-            console.log(userRole);
+        async function fetchStudentInfo() {
+            const storedStudentName = localStorage.getItem('studentName');
+            console.log(storedStudentName);
+            const storedUserRole = localStorage.getItem('userRole');
+            console.log(storedUserRole);
+            const storedProfileImage = localStorage.getItem('profileImage');
+            if (storedStudentName) {
+                setStudentName(storedStudentName);
+            }
+            if (storedUserRole) {
+                setUserRole(storedUserRole);
+            }
+            if (storedProfileImage) {
+                setProfileImage(storedProfileImage);
+            }
         }
 
         async function fetchCsrfToken() {
@@ -39,7 +45,12 @@ const Sidebar = ({ onLogout }) => {
                 console.error('Error fetching CSRF token:', error);
             }
         }
+
+        console.log(studentName);
+        console.log(userRole);
+        console.log(profileImage);
         fetchCsrfToken();
+        fetchStudentInfo();
     }, []);
 
     const toggleSidebar = () => {
@@ -62,8 +73,8 @@ const Sidebar = ({ onLogout }) => {
             title: (
                 <li className="relative flex items-center" onClick={toggleDropdown}>
                     <div className='flex items-center'>
-          <img src="../defa.jpg" alt="Student" className="mx-auto mb-4 absolute h-[130px] left-[5%] top-[8%] rounded-full border-2 border-slate-200" />
-          <img src="../defa.jpg" alt="Student" className="mx-auto mb-4 absolute h-[130px] left-[5%] top-[8%] rounded-full border-2 border-slate-200" />
+          <img src={profileImage ? profileImage : '../defa.jpg'} alt="Student" className="mx-auto mb-4 absolute h-[130px] left-[5%] top-[8%] rounded-full border-2 border-slate-200" />
+          <img src={profileImage ? profileImage : '../defa.jpg'} alt="Student" className="mx-auto mb-4 absolute h-[130px] left-[5%] top-[8%] rounded-full border-2 border-slate-200" />
                         <img src="../defa.jpg" className="w-9 h-9 rounded-full mb-2 mr-2" alt="StudentPic" />
                         <a href="#" className="text-white hover:text-gray-400 flex relative">{studentName}</a>
                     </div>
@@ -91,7 +102,7 @@ const Sidebar = ({ onLogout }) => {
     const studentMenus = [
         { title: "Dashboard", icon: faChartLine, path: "/student/dashboard" },
         { title: "Profile", icon: faUser, gap: true, path: "/student/profile" },
-        { title: "Pseudo-Enrollment", icon: faUserPlus, path: "/student/pseudo-enrollment" },
+        { title: "Enrollment", icon: faUserPlus, path: "/student/pseudo-enrollment" },
         { title: "Schedule", icon: faCalendar, path: "/student/schedules" },
         { title: "Grades", icon: faChartPie, path: "/student/grades" },
         { title: "Settings", icon: faCog, gap: true, path: "/settings" },
@@ -101,7 +112,7 @@ const Sidebar = ({ onLogout }) => {
             title: (
                 <li className="relative flex items-center" onClick={toggleDropdown}>
                     <div className='flex items-center'>
-                        <img src="../defa.jpg"  className="w-9 h-9 rounded-full mb-2 mr-2" alt="StudentPic" />
+                        <img src={profileImage ? profileImage : '../defa.jpg'}  className="w-9 h-9 rounded-full mb-2 mr-2" alt="StudentPic" />
                         <a href="#" className="text-white hover:text-gray-400 flex relative">{studentName}</a>
                     </div>
                     {isDropdownVisible && (

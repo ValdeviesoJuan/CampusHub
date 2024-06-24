@@ -73,7 +73,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/students/{student_id}/subjects', [StudentSubjectController::class, 'getStudentSubjects'])->name('students.subjects');
     Route::get('/students/{student_id}/subjects_enrolled', [StudentSubjectController::class, 'getStudentScheduleTeachers'])->name('students.subjects_enrolled');
     Route::get('/students-by-instructor', [StudentSubjectController::class, 'getStudentsByInstructor']);
-    Route::put('/update-grade/{studentId}/{subjectId}', [GradeController::class, 'updateGrade']);
+    Route::put('/update-grade/{subject_enrolled_id}', [GradeController::class, 'updateGrade']);
 
     Route::get('/instructors', [InstructorController::class, 'index'])->name('instructors.index');
     Route::post('/instructors/enroll', [InstructorController::class, 'enroll'])->name('instructors.enroll');

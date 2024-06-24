@@ -14,7 +14,7 @@ class GradeController extends Controller
      * @param  int  $studentId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateGrade(Request $request, $studentId, $subjectId)
+    public function updateGrade(Request $request, $subject_enrolled_id)
     {
         $request->validate([
             'midterm_grade' => 'nullable|string|max:10',
@@ -32,14 +32,10 @@ class GradeController extends Controller
             var_dump($data['midterm_grade']);
             var_dump($data['final_grade']);
             var_dump($data['remarks']);
-            var_dump($subjectId);
 
             \DB::enableQueryLog();
 
-            $subjectEnrolled = SubjectEnrolled::where('student_id', $studentId)
-                ->whereHas('subject', function ($query) use ($subjectId) {
-                    $query->where('id', $subjectId);
-                })
+            $subjectEnrolled = SubjectEnrolled::where('id', $subject_enrolled_id)
                 ->update($data);
 
             $queries = \DB::getQueryLog();

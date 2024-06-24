@@ -70,9 +70,10 @@ class Profile extends Component {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
+        const base64Image = reader.result;
         this.setState({
           file: file,
-          imagePreview: reader.result, // Base64 string for preview
+          imagePreview: reader.result, 
         });
       };
 
@@ -89,9 +90,13 @@ class Profile extends Component {
   
         console.log('Image uploaded successfully:', response.data);
         alert('Profile picture updated successfully.');
-  
-        this.fetchStudentInformation(studentId);
+        
+        this.fetchStudentInformation(this.state.studentId);
         this.setState({ file: null, imagePreview: null });
+        
+        const profileImage = `../src/assets/img/${response.data.profileImage}`;
+        localStorage.setItem('profileImage', profileImage);
+        console.log(profileImage);
 
       } catch (error) {
         console.error('Error uploading image:', error);
@@ -106,13 +111,16 @@ class Profile extends Component {
     const { studentData, loading, imagePreview } = this.state;
 
     if (loading) {
-      return <BlackLoadingSpinner />;
+      return <div className='relative flex align-middle justify-center text-center mx-auto my-auto'>
+        <BlackLoadingSpinner />
+      </div>;
     }
 
     let profileImage = null;
     if (studentData.profile_image) {
       const decodedFileName = atob(studentData.profile_image); // Decode base64 string
       profileImage = `../src/assets/img/${decodedFileName}`;
+      localStorage.setItem('profileImage', profileImage);
       console.log(profileImage);
     }
 

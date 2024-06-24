@@ -189,7 +189,7 @@ class StudentController extends Controller
 
             $student->update(['profile_image' => $fileName]);
 
-            return response()->json(['message' => 'Profile picture updated successfully']);
+            return response()->json(['message' => 'Profile picture updated successfully', 'profileImage' => $fileName]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error uploading image: ' . $e->getMessage()], 500);
         }
