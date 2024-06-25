@@ -71,8 +71,9 @@ class InstructorController extends Controller
             ->select('sub.subject_code', 
                      'sub.title', 
                      'se.name', 
-                     'sube.class_schedule')
-            ->groupBy('sub.subject_code', 'sub.title', 'se.name', 'sube.class_schedule')
+                     'sube.class_schedule',
+                     'sube.location')
+            ->groupBy('sub.subject_code', 'sub.title', 'se.name', 'sube.class_schedule', 'sube.location')
             ->get();
 
         return response()->json(['enrolledSubjects' => $enrolledSubjects, 'instructorName' => $instructor->name]);

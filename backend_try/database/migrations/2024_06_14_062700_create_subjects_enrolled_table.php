@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('subject_id')->constrained();
             $table->foreignId('instructor_id')->nullable()->constrained();
             $table->string('class_schedule')->nullable();
+            $table->string('location')->nullable();
             $table->string('midterm_grade')->nullable();
             $table->string('final_grade')->nullable();
             $table->string('remarks')->nullable();

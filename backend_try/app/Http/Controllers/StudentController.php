@@ -78,11 +78,13 @@ class StudentController extends Controller
 
             $instructorId = $existingEnrollment ? $existingEnrollment->instructor_id : null;
             $classSchedule = $existingEnrollment ? $existingEnrollment->class_schedule : '';
+            $location = $existingEnrollment ? $existingEnrollment->location : ''; 
 
             $student->subjectsEnrolled()->create([
                 'subject_id' => $subject->id,
                 'instructor_id' => $instructorId,
                 'class_schedule' => $classSchedule,
+                'location' => $location,
                 'midterm_grade' => null,
                 'final_grade' => null,
                 'remarks' => '',

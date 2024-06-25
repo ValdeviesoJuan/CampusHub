@@ -16,6 +16,7 @@ class SubjectEnrolled extends Model
         'subject_id',
         'instructor_id',
         'class_schedule',
+        'location',
         'midterm_grade',
         'final_grade',
         'remarks',

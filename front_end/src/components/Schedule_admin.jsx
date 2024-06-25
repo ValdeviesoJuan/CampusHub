@@ -15,7 +15,8 @@ const Schedule = () => {
     subject_name: "",
     day: "",
     start_time: "",
-    end_time: ""
+    end_time: "",
+    location: "",
   });
 
   useEffect(() => {
@@ -46,7 +47,8 @@ const Schedule = () => {
       subject_name: event.title,
       day: "",
       start_time: "",
-      end_time: ""
+      end_time: "",
+      location: ""
     });
     setShowModal(true);
   };
@@ -59,7 +61,7 @@ const Schedule = () => {
     
     try {
       const class_schedule = `${newSchedule.day} ${newSchedule.start_time}-${newSchedule.end_time}`;
-      await axiosInstance.put(`/api/admin/${editEventId}/schedule`, { class_schedule });
+      await axiosInstance.put(`/api/admin/${editEventId}/schedule`, { class_schedule, location: newSchedule.location });
       fetchEvents(); // Refresh the events
       setShowModal(false);
     } catch (error) {
@@ -134,6 +136,7 @@ const Schedule = () => {
                       <th scope="col" className="px-6 py-3">Course</th>
                       <th scope="col" className="px-6 py-3">Subject</th>
                       <th scope="col" className="px-6 py-3">Class Schedule</th>
+                      <th scope="col" className="px-6 py-3">Location</th>
                       <th scope="col" className="px-6 py-3">Instructor</th>
                       <th scope="col" className="px-6 py-3">Actions</th>
                     </tr>
@@ -145,6 +148,7 @@ const Schedule = () => {
                         <td className="px-6 py-4">{event.subject_code}</td>
                         <td className="px-6 py-4">{event.title}</td>
                         <td className="px-6 py-4">{event.class_schedule}</td>
+                        <td className="px-6 py-4">{event.location}</td>
                         <td className="px-6 py-4">{event.instructor_name}</td>
                         <td className="px-6 py-4 flex space-x-2">
                           <button onClick={() => handleEdit(event)} className="text-blue-500">
@@ -212,6 +216,15 @@ const Schedule = () => {
                     type="time"
                     value={newSchedule.end_time}
                     onChange={(e) => setNewSchedule({ ...newSchedule, end_time: e.target.value })}
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-gray-700">Location</label>
+                  <input
+                    type="text"
+                    value={newSchedule.location}
+                    onChange={(e) => setNewSchedule({ ...newSchedule, location: e.target.value })}
                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                   />
                 </div>

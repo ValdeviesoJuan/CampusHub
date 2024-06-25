@@ -108,6 +108,7 @@ const Schedule = () => {
                       <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Credit Unit</th>
                       <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Section</th>
                       <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Schedule</th>
+                      <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Location</th>
                       <th className="border bg-gray-900 text-white px-2 py-1" colSpan="2">Teacher</th>
                     </tr>
                   </thead>  
@@ -130,6 +131,7 @@ const Schedule = () => {
                           <td className="border border-gray px-2 py-1" colSpan="2">{subject.subject.credit_unit}</td>
                           <td className="border border-gray px-2 py-1" colSpan="2">{subject.student.section.name}</td>
                           <td className="border border-gray px-2 py-1" colSpan="2">{subject.class_schedule ? subject.class_schedule : 'Not Yet Assigned'}</td>
+                          <td className="border border-gray px-2 py-1" colSpan="2">{subject.location ? subject.location : 'Not Yet Assigned'}</td>
                           <td className="border border-gray px-2 py-1" colSpan="2">{subject.instructor_id ? subject.instructor.name : 'Not Yet Assigned'}</td>
                         </tr>
                       ))

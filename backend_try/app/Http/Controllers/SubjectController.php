@@ -29,6 +29,7 @@ class SubjectController extends Controller
                 'sub.title',
                 'sub.credit_unit',
                 'subjects_enrolled.class_schedule',
+                'subjects_enrolled.location',
                 'ins.name as instructor_name',
                 'ins.email as instructor_email'
             )
@@ -42,6 +43,7 @@ class SubjectController extends Controller
                 'sub.title',
                 'sub.credit_unit',
                 'subjects_enrolled.class_schedule',
+                'subjects_enrolled.location',
                 'ins.name',
                 'ins.email'
             )
@@ -58,7 +60,8 @@ class SubjectController extends Controller
     public function updateSchedule(Request $request, $id)
     {
         $request->validate([
-            'class_schedule' => 'required|string|max:255',
+            'class_schedule' => 'nullable|string|max:255',
+            'location' => 'nullable|string|max:255',
         ]);
 
         $subjectEnrolled = SubjectEnrolled::findOrFail($id);
@@ -74,7 +77,9 @@ class SubjectController extends Controller
                     $query->where('name', $sectionName);
                 });
             })
-            ->update(['class_schedule' => $request->class_schedule]);
+            ->update(['class_schedule' => $request->class_schedule,
+                      'location' =>  $request->location
+            ]);
 
         return response()->json(['message' => 'Schedule updated successfully.']);
     }

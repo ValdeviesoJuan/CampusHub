@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             SemesterSeeder::class,
             SectionSeeder::class,
             SubjectSeeder::class,
-            // UserSeeder::class,
+            UserSeeder::class,
         ]);
     }
 }

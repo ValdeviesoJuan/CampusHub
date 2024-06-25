@@ -113,6 +113,7 @@ const Schedule_instructor = () => {
                       <th className="border bg-gray-900 text-white px-2 py-1">Subject Title</th>
                       <th className="border bg-gray-900 text-white px-2 py-1">Section</th>
                       <th className="border bg-gray-900 text-white px-2 py-1">Class Schedule</th>
+                      <th className="border bg-gray-900 text-white px-2 py-1">Location</th>
                     </tr>
                   </thead>  
 
@@ -133,6 +134,7 @@ const Schedule_instructor = () => {
                           <td className="border border-gray px-2 py-1">{subject.title}</td>
                           <td className="border border-gray px-2 py-1">{subject.name}</td>
                           <td className="border border-gray px-2 py-1">{subject.class_schedule}</td>
+                          <td className="border border-gray px-2 py-1">{subject.location}</td>
                         </tr>
                       ))
                     )}

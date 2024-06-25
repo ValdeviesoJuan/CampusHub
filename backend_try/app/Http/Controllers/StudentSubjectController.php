@@ -44,7 +44,7 @@ class StudentSubjectController extends Controller
                 }, 'student.section', 'instructor' => function ($query) {
                     $query->select('id', 'name', 'email');
                 }])
-                ->get(['subject_id', 'student_id', 'instructor_id', 'class_schedule', 'remarks']);
+                ->get(['subject_id', 'student_id', 'instructor_id', 'class_schedule', 'location', 'remarks']);
 
             $studentName = $student->first_name;
             
