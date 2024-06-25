@@ -10,7 +10,7 @@ class Grades extends Component {
       averageGrade: 'B+',
       studentId: null,
       isEnrolled: false,
-      studentName: '', 
+      studentName: '',
       loading: true,
     };
   }
@@ -21,7 +21,7 @@ class Grades extends Component {
 
   checkEnrollment = async () => {
     try {
-      const response = await axiosInstance.get('/api/students/enrolled'); 
+      const response = await axiosInstance.get('/api/students/enrolled');
       const { isEnrolled, studentId } = response.data;
       console.log(response.data);
       if (isEnrolled) {
@@ -41,10 +41,10 @@ class Grades extends Component {
   fetchEnrolledSubjects = async (studentId) => {
     try {
       const response = await axiosInstance.get(`/api/students/${studentId}/subjects`);
-      this.setState({ 
+      this.setState({
         enrolledSubjects: response.data.enrolledSubjects,
         studentName: response.data.studentName,
-        loading: false,  
+        loading: false,
       });
     } catch (error) {
       console.error('Error fetching enrolled subjects:', error);
@@ -54,8 +54,13 @@ class Grades extends Component {
   };
 
   handlePrint = () => {
+    const printContents = document.getElementById('printable').innerHTML;
+    const originalContents = document.body.innerHTML;
+    document.body.innerHTML = printContents;
     window.print();
-  }
+    document.body.innerHTML = originalContents;
+    
+  };
 
   render() {
     const { enrolledSubjects, averageGrade, studentName, loading } = this.state;
@@ -68,7 +73,7 @@ class Grades extends Component {
         <div className="w-full flex justify-between items-center mb-6">
           <button onClick={this.handlePrint} className="p-2 bg-white border-black text-black rounded-lg">Print Grades</button>
         </div>
-        <div className="shadow-md sm:rounded-lg w-full">
+        <div id="printable" className="shadow-md sm:rounded-lg w-full">
           <table className="w-full text-sm text-left text-black border-4 border-gray-900">
             <thead className="text-xs uppercase dark:text-black">
               <tr>

@@ -52,6 +52,11 @@ const Schedule = () => {
   };
 
   const handleSave = async () => {
+    if (newSchedule.start_time >= newSchedule.end_time) {
+      alert("Start time must be less than end time.");
+      return;
+    }
+    
     try {
       const class_schedule = `${newSchedule.day} ${newSchedule.start_time}-${newSchedule.end_time}`;
       await axiosInstance.put(`/api/admin/${editEventId}/schedule`, { class_schedule });

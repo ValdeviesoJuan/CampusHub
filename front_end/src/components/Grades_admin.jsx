@@ -45,10 +45,11 @@ class Grades extends Component {
       }
     }).then(response => {
       const students = response.data.map(student => ({
-        student_id: student.id,
+        student_id: student.student.id,
         student_name: `${student.student.first_name} ${student.student.last_name}`,
         subject_code: student.subject.subject_code,
         title: student.subject.title,
+        credit_unit: student.subject.credit_unit,
         section_name: student.student.section.name,
         midterm_grade: student.midterm_grade,
         final_grade: student.final_grade,
@@ -184,7 +185,7 @@ class Grades extends Component {
                 <td className="px-6 py-4">{student.student_name}</td>
                 <td className="px-6 py-4">{student.subject_code}</td>
                 <td className="px-6 py-4">{student.title}</td>
-                <td className="px-6 py-4">{student.units}</td>
+                <td className="px-6 py-4">{student.credit_unit}</td>
                 <td className="px-6 py-4">{student.section_name}</td>
                 <td className="px-6 py-4">
                   {editMode && editIndex === student.student_id ? (
@@ -257,7 +258,7 @@ class Grades extends Component {
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-4">Grades Management</h1>
 
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label className="mr-2">Subject:</label>
           <select
             value={selectedSubject}
@@ -300,7 +301,7 @@ class Grades extends Component {
           >
             Filter
           </button>
-        </div>
+        </div> */}
 
         <div className="mb-4">
           <input
@@ -308,14 +309,14 @@ class Grades extends Component {
             value={searchQuery}
             onChange={this.handleSearchChange}
             placeholder="Search by student name"
-            className="p-2 border-2 border-gray-900 rounded-lg w-full"
+            className="p-2 border-2 border-gray-900 rounded-lg w-50"
           />
-          <button
+          {/* <button
             onClick={this.handleSearchClick}
             className="ml-4 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700"
           >
             Search
-          </button>
+          </button> */}
         </div>
 
         {this.renderGradesTable()}

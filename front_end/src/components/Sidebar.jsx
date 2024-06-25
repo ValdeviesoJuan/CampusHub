@@ -73,9 +73,7 @@ const Sidebar = ({ onLogout }) => {
             title: (
                 <li className="relative flex items-center" onClick={toggleDropdown}>
                     <div className='flex items-center'>
-          <img src={profileImage ? profileImage : '../defa.jpg'} alt="Student" className="mx-auto mb-4 absolute h-[130px] left-[5%] top-[8%] rounded-full border-2 border-slate-200" />
-          <img src={profileImage ? profileImage : '../defa.jpg'} alt="Student" className="mx-auto mb-4 absolute h-[130px] left-[5%] top-[8%] rounded-full border-2 border-slate-200" />
-                        <img src="../defa.jpg" className="w-9 h-9 rounded-full mb-2 mr-2" alt="StudentPic" />
+                        <img src={profileImage ? profileImage : '../defa.jpg'}  className="w-9 h-9 rounded-full mb-2 mr-2" alt="StudentPic" />
                         <a href="#" className="text-white hover:text-gray-400 flex relative">{studentName}</a>
                     </div>
                     {isDropdownVisible && (
