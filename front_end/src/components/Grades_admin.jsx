@@ -43,8 +43,6 @@ class Grades extends Component {
       searchQuery: '',
       editedStudents: {}, // Store edited student data
       selectedSubjectId: null, // Track selected subject ID
-      submittedMidterms: {}, // Track if midterm grades have been submitted
-      submittedFinals: {}, // Track if final grades have been submitted
       allowGradeSubmission: false,
       confirmSubmitGrades: false,
       confirmNoEditAfterSubmit: false,
@@ -122,59 +120,11 @@ class Grades extends Component {
   };
 
   handleSaveClick = (studentId) => {
-    const { editedStudents, selectedSubjectId, confirmSubmitGrades, confirmNoEditAfterSubmit, confirmSave } = this.state;
+    const { editedStudents, selectedSubjectId } = this.state;
     const editedStudent = editedStudents[studentId];
 
-    // Check if confirmations are needed
-    if (!confirmSubmitGrades) {
-      this.setState({ confirmSubmitGrades: true });
-      return;
-    }
-
-    if (!confirmNoEditAfterSubmit) {
-      this.setState({ confirmNoEditAfterSubmit: true });
-      return;
-    }
-
-    if (!confirmSave) {
-      this.setState({ confirmSave: true });
-      return;
-    }
-
-    axiosInstance.put(`/api/update-grade/${selectedSubjectId}`, editedStudent)
-      .then(response => {
-        console.log('Grade updated successfully:', response.data);
-
-        const updatedStudents = this.state.students.map(student => {
-          if (student.student_id === studentId) {
-            return {
-              ...student,
-              midterm_grade: editedStudent.midterm_grade || student.midterm_grade,
-              final_grade: editedStudent.final_grade || student.final_grade,
-              remarks: editedStudent.remarks || student.remarks,
-              is_midterm_submitted: editedStudent.midterm_grade ? true : student.is_midterm_submitted,
-              is_final_submitted: editedStudent.final_grade ? true : student.is_final_submitted
-            };
-          }
-          return student;
-        });
-
-        this.setState({
-          editIndex: -1,
-          editMode: false,
-          editedStudents: {
-            ...editedStudents,
-            [studentId]: undefined,
-          },
-          students: updatedStudents,
-          confirmSubmitGrades: false,
-          confirmNoEditAfterSubmit: false,
-          confirmSave: false,
-        });
-      })
-      .catch(error => {
-        console.error('Error updating grade:', error);
-      });
+    // Trigger the first confirmation modal
+    this.setState({ confirmSubmitGrades: true });
   };
 
   handlePageChange = (page) => {
@@ -190,20 +140,18 @@ class Grades extends Component {
   };
 
   handleConfirmSubmitGrades = () => {
-    this.setState({ confirmSubmitGrades: false });
-    // Proceed to save action
-    this.saveGrades();
+    // Close the first modal and proceed to the second modal
+    this.setState({ confirmSubmitGrades: false, confirmNoEditAfterSubmit: true });
   };
 
   handleConfirmNoEditAfterSubmit = () => {
-    this.setState({ confirmNoEditAfterSubmit: false });
-    // Proceed to save action
-    this.saveGrades();
+    // Close the second modal and proceed to saving grades
+    this.setState({ confirmNoEditAfterSubmit: false, confirmSave: true });
   };
 
   handleConfirmSave = () => {
+    // Close the save confirmation modal and actually save the grades
     this.setState({ confirmSave: false });
-    // Proceed to save action
     this.saveGrades();
   };
 
@@ -423,18 +371,18 @@ class Grades extends Component {
 
         <div className="mb-4">
           <input
-          type="text"
-          value={searchQuery}
-          onChange={this.handleSearchChange}
-          placeholder="Search by student name"
-          className="p-2 border-2 border-gray-900 rounded-lg w-50"
-        />
-      </div>
+            type="text"
+            value={searchQuery}
+            onChange={this.handleSearchChange}
+            placeholder="Search by student name"
+            className="p-2 border-2 border-gray-900 rounded-lg w-50"
+          />
+        </div>
 
-      {this.renderGradesTable()}
-    </div>
-  );
-}
+        {this.renderGradesTable()}
+      </div>
+    );
+  }
 }
 
 export default Grades;
