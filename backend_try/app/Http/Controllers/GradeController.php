@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SubjectEnrolled;
+use App\Models\AdminSettings;
 
 class GradeController extends Controller
 {
@@ -23,30 +24,37 @@ class GradeController extends Controller
         ]);
 
         try {
-            $data = [
-                'midterm_grade' => $request->midterm_grade !== '' ? $request->midterm_grade : null,
-                'final_grade' => $request->final_grade !== '' ? $request->final_grade : null,
-                'remarks' => $request->remarks !== '' ? $request->remarks : null,
-            ];
-
-            var_dump($data['midterm_grade']);
-            var_dump($data['final_grade']);
-            var_dump($data['remarks']);
-
-            \DB::enableQueryLog();
-
-            $subjectEnrolled = SubjectEnrolled::where('id', $subject_enrolled_id)
-                ->update($data);
-
-            $queries = \DB::getQueryLog();
-            \Log::info($queries); // Log the queries to investigate
-
-            if ($subjectEnrolled) {
-                return response()->json(['message' => 'Grades updated successfully'], 200);
-                
-            } else {
-                return response()->json(['message' => 'Student not found or unable to update grades'], 404);
+            // Check if grade submission is open
+            $adminSettings = AdminSettings::firstOrFail();
+            if (!$adminSettings->is_grade_submission_open) {
+                return response()->json(['message' => 'Grade submission is closed'], 403);
             }
+
+            $subjectEnrolled = SubjectEnrolled::findOrFail($subject_enrolled_id);
+
+            if ($request->has('midterm_grade')) {
+                if ($subjectEnrolled->is_midterm_submitted) {
+                    return response()->json(['message' => 'Midterm grade has already been submitted'], 403);
+                }
+                $subjectEnrolled->midterm_grade = $request->midterm_grade !== '' ? $request->midterm_grade : null;
+                $subjectEnrolled->is_midterm_submitted = true;
+            }
+
+            if ($request->has('final_grade')) {
+                if ($subjectEnrolled->is_final_submitted) {
+                    return response()->json(['message' => 'Final grade has already been submitted'], 403);
+                }
+                $subjectEnrolled->final_grade = $request->final_grade !== '' ? $request->final_grade : null;
+                $subjectEnrolled->is_final_submitted = true;
+            }
+
+            if ($request->has('remarks')) {
+                $subjectEnrolled->remarks = $request->remarks !== '' ? $request->remarks : null;
+            }
+
+            $subjectEnrolled->save();
+
+            return response()->json(['message' => 'Grades posted successfully'], 200);
 
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to update grades', 'error' => $e->getMessage()], 500);

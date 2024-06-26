@@ -66,7 +66,7 @@ function App() {
             <Route path="/instructor/schedules" element={isAuthenticated && userRole === 'instructor' ? <Schedule_instructor/> : <Navigate to="/login" />} />
             <Route path="/admin" element={isAuthenticated && userRole === 'admin' ? <Admin /> : <Navigate to="/login" />} />
             <Route path="/students" element={isAuthenticated && userRole === 'admin' ? <Students /> : <Navigate to="/login" />} />
-            <Route path="/settings" element={isAuthenticated ? <Settings /> : <Navigate to="/login" />} />
+            <Route path="/admin/settings" element={isAuthenticated ? <Settings /> : <Navigate to="/login" />} />
             <Route path="*" element={<Navigate to={isAuthenticated ? (userRole === 'admin' ? "/admin/dashboard" : "/student/dashboard") : "/login"} />} />
           </Routes>
         </div>

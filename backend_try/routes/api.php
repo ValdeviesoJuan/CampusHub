@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Instructor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -20,6 +19,7 @@ use App\Http\Controllers\StudentSubjectController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\InstructorSectionsHandledController;
 use App\Http\Controllers\GradeController;
+use App\Http\Controllers\AdminSettingsController;
 
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
@@ -89,5 +89,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::get('/admin/section-schedules', [SubjectController::class, 'getSectionSchedules']);
     Route::put('/admin/{id}/schedule', [SubjectController::class, 'updateSchedule']);
+    Route::get('/admin-settings', [AdminSettingsController::class, 'fetchSettings']);
+    Route::put('/admin-settings', [AdminSettingsController::class, 'updateSettings']);
 });
 

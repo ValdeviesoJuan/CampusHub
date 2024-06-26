@@ -66,7 +66,7 @@ const Sidebar = ({ onLogout }) => {
         { title: "Dashboard", icon: faChartLine, path: "/admin/dashboard" },
         { title: "Assign Instructor", icon: faUser, gap: true, path: "/admin/instructor-assign" },
         { title: "Assign Schedule", icon: faChartPie, path: "/admin/schedules" },
-        { title: "Settings", icon: faCog, gap: true, path: "/settings" },
+        { title: "Admin Settings", icon: faCog, path: "/admin/settings" },
         { title: "", gap: true, path: "/" },
         { title: "", gap: true, path: "/" },
         {
@@ -100,10 +100,9 @@ const Sidebar = ({ onLogout }) => {
     const studentMenus = [
         { title: "Dashboard", icon: faChartLine, path: "/student/dashboard" },
         { title: "Profile", icon: faUser, gap: true, path: "/student/profile" },
-        { title: "Enrollment", icon: faUserPlus, path: "/student/pseudo-enrollment" },
+        { title: "Enrollment", icon: faUserPlus,  gap: true, path: "/student/pseudo-enrollment" },
         { title: "Schedule", icon: faCalendar, path: "/student/schedules" },
         { title: "Grades", icon: faChartPie, path: "/student/grades" },
-        { title: "Settings", icon: faCog, gap: true, path: "/settings" },
         { title: "", gap: true, path: "/" },
         { title: "", gap: true, path: "/" },
         {
@@ -137,9 +136,8 @@ const Sidebar = ({ onLogout }) => {
     const instructorMenus = [
         { title: "Dashboard", icon: faChartLine, gap: true, path: "/instructor/dashboard" },
         { title: "Pseudo-Enrollment", icon: faUserPlus, path: "/instructor/pseudo-enrollment" },
-        { title: "Schedule", icon: faCalendar, path: "/instructor/schedules" },
+        { title: "Schedule", icon: faCalendar,  gap: true, path: "/instructor/schedules" },
         { title: "Grades", icon: faChartPie, path: "/instructor/grades" },
-        { title: "Settings", icon: faCog, gap: true, path: "/settings" },
         { title: "", gap: true, path: "/" },
         { title: "", gap: true, path: "/" },
         {
